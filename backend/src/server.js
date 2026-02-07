@@ -4,8 +4,9 @@ import helmet from 'helmet';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initializeDatabase } from './config/database.js';
+import { initializeDatabase, dbGet, dbRun } from './config/database.js';
 import errorHandler from './middleware/errorHandler.js';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -83,6 +84,15 @@ app.use(errorHandler);
 const startServer = async () => {
   try {
     await initializeDatabase();
+
+    // Auto-seed admin user if no users exist
+    const existingUser = await dbGet('SELECT * FROM users WHERE username = ?', ['admin']);
+    if (!existingUser) {
+      const hashedPassword = await bcrypt.hash('admin123', 12);
+      await dbRun('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', ['admin', 'admin@carsales.local', hashedPassword]);
+      console.log('Default admin user created (admin/admin123)');
+    }
+
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📍 CORS enabled for: ${CORS_ORIGIN}`);
