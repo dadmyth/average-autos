@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Sales from './pages/Sales';
 import CarDetails from './pages/CarDetails';
+import Settings from './pages/Settings';
 import Layout from './components/layout/Layout';
 
 // Protected Route wrapper
@@ -41,6 +42,7 @@ const App = () => {
             <Route path="inventory" element={<Inventory />} />
             <Route path="cars/:id" element={<CarDetails />} />
             <Route path="sales" element={<Sales />} />
+            <Route path="settings" element={<Settings />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />

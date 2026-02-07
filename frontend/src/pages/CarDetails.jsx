@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getCar, deleteCar, addServiceRecord, deleteServiceRecord, uploadPhotos, deletePhoto } from '../api/cars';
 import { createSale } from '../api/sales';
 import { uploadDocuments, getDocuments, deleteDocument } from '../api/documents';
+import { getSettings } from '../api/settings';
 import { formatCurrency, formatDate, getExpiryStatus, daysUntilExpiry, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 
@@ -20,6 +21,7 @@ const CarDetails = () => {
   const [documentType, setDocumentType] = useState('other');
   const [lightboxImage, setLightboxImage] = useState(null);
   const [showSalesAgreement, setShowSalesAgreement] = useState(false);
+  const [businessDetails, setBusinessDetails] = useState({ business_name: '', business_phone: '', business_email: '' });
   const [serviceFormData, setServiceFormData] = useState({
     service_date: '',
     service_type: 'maintenance',
@@ -44,6 +46,7 @@ const CarDetails = () => {
 
   useEffect(() => {
     fetchCarDetails();
+    getSettings().then(res => setBusinessDetails(res.data)).catch(() => {});
   }, [id]);
 
   // ESC key to close lightbox
@@ -880,9 +883,9 @@ const CarDetails = () => {
                   <div className="grid grid-cols-2 gap-8">
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2 text-sm">SELLER</h3>
-                      <p className="text-sm text-gray-700">Average Autos Ltd</p>
-                      <p className="text-sm text-gray-700">Phone: 027 246 6660</p>
-                      <p className="text-sm text-gray-700">Email: joshc88@pm.me</p>
+                      <p className="text-sm text-gray-700">{businessDetails.business_name}</p>
+                      <p className="text-sm text-gray-700">Phone: {businessDetails.business_phone}</p>
+                      <p className="text-sm text-gray-700">Email: {businessDetails.business_email}</p>
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2 text-sm">BUYER</h3>

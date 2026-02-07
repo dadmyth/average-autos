@@ -20,6 +20,7 @@ import carRoutes from './routes/cars.js';
 import saleRoutes from './routes/sales.js';
 import dashboardRoutes from './routes/dashboard.js';
 import documentRoutes from './routes/documents.js';
+import settingsRoutes from './routes/settings.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -51,6 +52,7 @@ app.use('/api/cars', carRoutes);
 app.use('/api/sales', saleRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/documents', documentRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

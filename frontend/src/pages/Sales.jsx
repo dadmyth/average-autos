@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getSales } from '../api/sales';
 import { getCar } from '../api/cars';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { getSettings } from '../api/settings';
 
 const Sales = () => {
   const navigate = useNavigate();
@@ -11,9 +12,11 @@ const Sales = () => {
   const [selectedSale, setSelectedSale] = useState(null);
   const [showSalesAgreement, setShowSalesAgreement] = useState(false);
   const [agreementCar, setAgreementCar] = useState(null);
+  const [businessDetails, setBusinessDetails] = useState({ business_name: '', business_phone: '', business_email: '' });
 
   useEffect(() => {
     fetchSales();
+    getSettings().then(res => setBusinessDetails(res.data)).catch(() => {});
   }, []);
 
   const fetchSales = async () => {
@@ -176,9 +179,9 @@ const Sales = () => {
                   <div className="grid grid-cols-2 gap-8">
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2 text-sm">SELLER</h3>
-                      <p className="text-sm text-gray-700">Average Autos Ltd</p>
-                      <p className="text-sm text-gray-700">Phone: 027 246 6660</p>
-                      <p className="text-sm text-gray-700">Email: joshc88@pm.me</p>
+                      <p className="text-sm text-gray-700">{businessDetails.business_name}</p>
+                      <p className="text-sm text-gray-700">Phone: {businessDetails.business_phone}</p>
+                      <p className="text-sm text-gray-700">Email: {businessDetails.business_email}</p>
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 mb-2 text-sm">BUYER</h3>

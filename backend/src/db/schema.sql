@@ -73,6 +73,20 @@ CREATE TABLE IF NOT EXISTS documents (
     FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
 );
 
+-- Settings Table (single-row, application-wide settings)
+CREATE TABLE IF NOT EXISTS settings (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    business_name TEXT NOT NULL DEFAULT 'Average Autos Ltd',
+    business_phone TEXT NOT NULL DEFAULT '027 246 6660',
+    business_email TEXT NOT NULL DEFAULT 'joshc88@pm.me',
+    business_address TEXT DEFAULT '',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Seed default settings
+INSERT OR IGNORE INTO settings (id, business_name, business_phone, business_email, business_address)
+VALUES (1, 'Average Autos Ltd', '027 246 6660', 'joshc88@pm.me', '');
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_cars_status ON cars(status);
 CREATE INDEX IF NOT EXISTS idx_cars_reg_expiry ON cars(registration_expiry);
