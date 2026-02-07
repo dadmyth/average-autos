@@ -87,12 +87,19 @@ const startServer = async () => {
   try {
     await initializeDatabase();
 
-    // Auto-seed admin user if no users exist
-    const existingUser = await dbGet('SELECT * FROM users WHERE username = ?', ['admin']);
-    if (!existingUser) {
-      const hashedPassword = await bcrypt.hash('admin123', 12);
-      await dbRun('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', ['admin', 'admin@carsales.local', hashedPassword]);
-      console.log('Default admin user created (admin/admin123)');
+    // Migrate old admin user to josh, or create if none exist
+    const adminUser = await dbGet('SELECT * FROM users WHERE username = ?', ['admin']);
+    if (adminUser) {
+      const hashedPassword = await bcrypt.hash('S67kz5N8', 12);
+      await dbRun('UPDATE users SET username = ?, email = ?, password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['josh', 'joshc88@pm.me', hashedPassword, adminUser.id]);
+      console.log('Admin account migrated to josh');
+    } else {
+      const joshUser = await dbGet('SELECT * FROM users WHERE username = ?', ['josh']);
+      if (!joshUser) {
+        const hashedPassword = await bcrypt.hash('S67kz5N8', 12);
+        await dbRun('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', ['josh', 'joshc88@pm.me', hashedPassword]);
+        console.log('Default user created');
+      }
     }
 
     app.listen(PORT, '0.0.0.0', () => {
