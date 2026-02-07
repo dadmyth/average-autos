@@ -1,0 +1,54 @@
+<svg width="220" height="80" viewBox="0 0 220 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Retro background sun rays -->
+  <defs>
+    <linearGradient id="sunGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#FFE66D;stop-opacity:0.3" />
+    </linearGradient>
+  </defs>
+
+  <!-- Retro sun circle -->
+  <circle cx="35" cy="25" r="18" fill="url(#sunGradient)" opacity="0.6"/>
+
+  <!-- 1990s Corolla AE92/AE101 - Side profile (boxy sedan) -->
+  <g transform="translate(8, 35)">
+    <!-- Car body - boxy 90s sedan shape -->
+    <path d="M 5 12 L 12 3 L 28 3 L 35 12 L 50 12 L 50 20 L 47 20 L 47 22 C 47 23.5 45.5 25 44 25 C 42.5 25 41 23.5 41 22 L 41 20 L 19 20 L 19 22 C 19 23.5 17.5 25 16 25 C 14.5 25 13 23.5 13 22 L 13 20 L 10 20 L 10 12 L 5 12 Z"
+          fill="#E76F51" stroke="#C44536" stroke-width="1.5"/>
+
+    <!-- Side panels and details -->
+    <rect x="12" y="12" width="23" height="8" fill="#D35B45" opacity="0.3"/>
+
+    <!-- Windows - simple rectangles for boxy look -->
+    <path d="M 14 5 L 19 5 L 18 11 L 14 11 Z"
+          fill="#4ECDC4" opacity="0.5" stroke="#3BA8A0" stroke-width="0.5"/>
+    <path d="M 26 5 L 32 5 L 33 11 L 28 11 Z"
+          fill="#4ECDC4" opacity="0.5" stroke="#3BA8A0" stroke-width="0.5"/>
+
+    <!-- Front and rear details -->
+    <line x1="11" y1="12" x2="11" y2="20" stroke="#C44536" stroke-width="1"/>
+    <line x1="36" y1="12" x2="36" y2="20" stroke="#C44536" stroke-width="1"/>
+
+    <!-- Wheels - period correct -->
+    <circle cx="16" cy="22" r="3.5" fill="#2F2F2F" stroke="#1A1A1A" stroke-width="1.2"/>
+    <circle cx="44" cy="22" r="3.5" fill="#2F2F2F" stroke="#1A1A1A" stroke-width="1.2"/>
+    <circle cx="16" cy="22" r="1.8" fill="#5A5A5A"/>
+    <circle cx="44" cy="22" r="1.8" fill="#5A5A5A"/>
+
+    <!-- Hub caps detail -->
+    <circle cx="16" cy="22" r="1" fill="#8A8A8A"/>
+    <circle cx="44" cy="22" r="1" fill="#8A8A8A"/>
+  </g>
+
+  <!-- Retro text with 90s aesthetic -->
+  <text x="70" y="35" font-family="'Arial Black', 'Arial Bold', sans-serif" font-size="22" font-weight="900" fill="#4ECDC4" letter-spacing="-0.5">
+    AVERAGE
+  </text>
+  <text x="70" y="55" font-family="'Arial Black', 'Arial Bold', sans-serif" font-size="22" font-weight="900" fill="#E76F51" letter-spacing="-0.5">
+    AUTOS
+  </text>
+
+  <!-- Retro accent lines -->
+  <line x1="70" y1="58" x2="190" y2="58" stroke="#FFE66D" stroke-width="2" opacity="0.6"/>
+  <line x1="70" y1="61" x2="190" y2="61" stroke="#4ECDC4" stroke-width="1.5" opacity="0.4"/>
+</svg>

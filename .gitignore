@@ -1,0 +1,21 @@
+node_modules/
+frontend/dist/
+*.env
+.env.*
+!.env.example
+nul
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Data (keep structure but not actual DB in production)
+# backend/data/*.db
