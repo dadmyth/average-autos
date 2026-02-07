@@ -46,7 +46,7 @@ const Inventory = () => {
         <h1 className="text-3xl font-bold text-gray-900">Inventory</h1>
         <button
           onClick={handleAddCar}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
         >
           Add New Car
         </button>
@@ -57,7 +57,7 @@ const Inventory = () => {
         <button
           onClick={() => setFilter('all')}
           className={`px-4 py-2 rounded-md ${
-            filter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            filter === 'all' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
           All
@@ -65,7 +65,7 @@ const Inventory = () => {
         <button
           onClick={() => setFilter('active')}
           className={`px-4 py-2 rounded-md ${
-            filter === 'active' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            filter === 'active' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
           Active
@@ -73,7 +73,7 @@ const Inventory = () => {
         <button
           onClick={() => setFilter('sold')}
           className={`px-4 py-2 rounded-md ${
-            filter === 'sold' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
+            filter === 'sold' ? 'bg-gray-800 text-white' : 'bg-gray-200 text-gray-700'
           }`}
         >
           Sold
@@ -106,7 +106,7 @@ const Inventory = () => {
             </div>
             <Link
               to={`/cars/${car.id}`}
-              className="block w-full text-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+              className="block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
             >
               View Details
             </Link>

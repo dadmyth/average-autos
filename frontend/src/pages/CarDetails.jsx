@@ -315,7 +315,7 @@ const CarDetails = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-gray-900">Photos</h2>
               {car.status === 'active' && (
-                <label className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm cursor-pointer">
+                <label className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm cursor-pointer">
                   {uploading ? 'Uploading...' : 'Upload Photos'}
                   <input
                     type="file"
@@ -369,14 +369,14 @@ const CarDetails = () => {
                   <select
                     value={documentType}
                     onChange={(e) => setDocumentType(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     disabled={uploadingDocs}
                   >
                     <option value="license">License</option>
                     <option value="payment_confirmation">Payment Confirmation</option>
                     <option value="other">Other</option>
                   </select>
-                  <label className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm cursor-pointer">
+                  <label className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm cursor-pointer">
                     {uploadingDocs ? 'Uploading...' : 'Upload'}
                     <input
                       type="file"
@@ -460,7 +460,7 @@ const CarDetails = () => {
               {car.status === 'active' && (
                 <button
                   onClick={() => setShowServiceForm(!showServiceForm)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm"
+                  className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm"
                 >
                   {showServiceForm ? 'Cancel' : 'Add Expense'}
                 </button>
@@ -477,7 +477,7 @@ const CarDetails = () => {
                       value={serviceFormData.service_date}
                       onChange={(e) => setServiceFormData({ ...serviceFormData, service_date: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                   <div>
@@ -486,7 +486,7 @@ const CarDetails = () => {
                       value={serviceFormData.service_type}
                       onChange={(e) => setServiceFormData({ ...serviceFormData, service_type: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     >
                       <option value="maintenance">Maintenance</option>
                       <option value="repair">Repair</option>
@@ -502,7 +502,7 @@ const CarDetails = () => {
                       value={serviceFormData.description}
                       onChange={(e) => setServiceFormData({ ...serviceFormData, description: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                       placeholder="Oil change, brake pads replacement, etc."
                     />
                   </div>
@@ -515,7 +515,7 @@ const CarDetails = () => {
                       required
                       min="0"
                       step="0.01"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                   <div>
@@ -524,7 +524,7 @@ const CarDetails = () => {
                       type="text"
                       value={serviceFormData.provider}
                       onChange={(e) => setServiceFormData({ ...serviceFormData, provider: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                       placeholder="Mechanic shop name"
                     />
                   </div>
@@ -573,7 +573,7 @@ const CarDetails = () => {
                 <h2 className="text-xl font-bold text-gray-900">Sale Information</h2>
                 <button
                   onClick={() => setShowSalesAgreement(true)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm flex items-center gap-2"
+                  className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -647,7 +647,7 @@ const CarDetails = () => {
               <div className="space-y-3">
                 <button
                   onClick={() => setShowEditForm(true)}
-                  className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
                 >
                   Edit Car
                 </button>
@@ -703,7 +703,7 @@ const CarDetails = () => {
                       value={saleFormData.sale_date}
                       onChange={(e) => setSaleFormData({ ...saleFormData, sale_date: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                   <div>
@@ -715,7 +715,7 @@ const CarDetails = () => {
                       required
                       min="0"
                       step="0.01"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                   <div className="col-span-2">
@@ -725,7 +725,7 @@ const CarDetails = () => {
                       value={saleFormData.customer_name}
                       onChange={(e) => setSaleFormData({ ...saleFormData, customer_name: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                   <div>
@@ -734,7 +734,7 @@ const CarDetails = () => {
                       type="email"
                       value={saleFormData.customer_email}
                       onChange={(e) => setSaleFormData({ ...saleFormData, customer_email: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                       placeholder="customer@example.com"
                     />
                   </div>
@@ -745,7 +745,7 @@ const CarDetails = () => {
                       value={saleFormData.customer_phone}
                       onChange={(e) => setSaleFormData({ ...saleFormData, customer_phone: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                       placeholder="021234567"
                     />
                   </div>
@@ -756,7 +756,7 @@ const CarDetails = () => {
                       value={saleFormData.customer_license_number}
                       onChange={(e) => setSaleFormData({ ...saleFormData, customer_license_number: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 uppercase"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 uppercase"
                       placeholder="AA123456"
                     />
                   </div>
@@ -766,7 +766,7 @@ const CarDetails = () => {
                       type="text"
                       value={saleFormData.customer_license_version}
                       onChange={(e) => setSaleFormData({ ...saleFormData, customer_license_version: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                   <div>
@@ -775,7 +775,7 @@ const CarDetails = () => {
                       value={saleFormData.payment_method}
                       onChange={(e) => setSaleFormData({ ...saleFormData, payment_method: e.target.value })}
                       required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     >
                       <option value="bank_transfer">Bank Transfer</option>
                       <option value="cash">Cash</option>
@@ -790,7 +790,7 @@ const CarDetails = () => {
                       value={saleFormData.notes}
                       onChange={(e) => setSaleFormData({ ...saleFormData, notes: e.target.value })}
                       rows="3"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
                 </div>
@@ -850,7 +850,7 @@ const CarDetails = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => window.print()}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 flex items-center gap-2"
+                    className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 flex items-center gap-2"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />

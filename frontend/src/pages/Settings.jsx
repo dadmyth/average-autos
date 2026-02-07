@@ -77,7 +77,7 @@ const Settings = () => {
     setPasswordLoading(false);
   };
 
-  const inputClass = 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm';
+  const inputClass = 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm';
 
   return (
     <div className="space-y-6">
@@ -113,7 +113,7 @@ const Settings = () => {
             <input type="text" value={businessAddress} onChange={(e) => setBusinessAddress(e.target.value)} className={inputClass} />
           </div>
           <button type="submit" disabled={businessLoading}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+            className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 disabled:opacity-50">
             {businessLoading ? 'Saving...' : 'Save Business Details'}
           </button>
         </form>
@@ -142,7 +142,7 @@ const Settings = () => {
             <input type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className={inputClass} />
           </div>
           <button type="submit" disabled={passwordLoading}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50">
+            className="bg-gray-800 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 disabled:opacity-50">
             {passwordLoading ? 'Changing...' : 'Change Password'}
           </button>
         </form>

@@ -138,7 +138,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.registration_plate}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 uppercase"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 uppercase"
                   placeholder="ABC123"
                 />
               </div>
@@ -154,7 +154,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.make}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="Toyota"
                 />
               </div>
@@ -170,7 +170,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.model}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="Corolla"
                 />
               </div>
@@ -188,7 +188,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   required
                   min="1900"
                   max={new Date().getFullYear() + 1}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                 />
               </div>
 
@@ -202,7 +202,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   name="color"
                   value={formData.color}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="Silver"
                 />
               </div>
@@ -218,7 +218,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.odometer}
                   onChange={handleChange}
                   min="0"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="85000"
                 />
               </div>
@@ -233,7 +233,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   name="vin"
                   value={formData.vin}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="1HGBH41JXMN109186"
                 />
               </div>
@@ -249,7 +249,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.registration_expiry}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                 />
               </div>
 
@@ -264,7 +264,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.wof_expiry}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                 />
               </div>
 
@@ -279,7 +279,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.purchase_date}
                   onChange={handleChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                 />
               </div>
 
@@ -296,7 +296,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   required
                   min="0"
                   step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="12000.00"
                 />
               </div>
@@ -311,7 +311,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
                   value={formData.notes}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                   placeholder="Additional information about the car..."
                 />
               </div>
@@ -328,7 +328,7 @@ const CarForm = ({ isOpen, onClose, onSuccess, car = null }) => {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+                className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 disabled:opacity-50"
                 disabled={loading}
               >
                 {loading ? 'Saving...' : car ? 'Update Car' : 'Add Car'}

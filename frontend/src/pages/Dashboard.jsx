@@ -87,7 +87,7 @@ const Dashboard = () => {
             <div className="flex items-center">
               <div className="flex-1">
                 <dt className="text-sm font-medium text-gray-500 truncate">Sold Cars</dt>
-                <dd className="mt-1 text-3xl font-semibold text-blue-600">{stats?.sold_cars || 0}</dd>
+                <dd className="mt-1 text-3xl font-semibold text-gray-800">{stats?.sold_cars || 0}</dd>
               </div>
             </div>
           </div>
@@ -122,7 +122,7 @@ const Dashboard = () => {
                   labelLine={false}
                   label={({ name, value }) => `${name}: ${value}`}
                   outerRadius={100}
-                  fill="#8884d8"
+                  fill="#374151"
                   dataKey="value"
                 >
                   {inventoryData.map((entry, index) => (
@@ -232,7 +232,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold text-gray-900">Active Stock ({activeCars.length})</h2>
           <Link
             to="/inventory"
-            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+            className="text-gray-800 hover:text-gray-600 text-sm font-medium"
           >
             View All →
           </Link>
@@ -290,7 +290,7 @@ const Dashboard = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
                       <Link
                         to={`/cars/${car.id}`}
-                        className="text-blue-600 hover:text-blue-900 font-medium"
+                        className="text-gray-800 hover:text-gray-600 font-medium"
                       >
                         View Details
                       </Link>
