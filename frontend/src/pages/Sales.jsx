@@ -167,7 +167,7 @@ const Sales = () => {
               {/* Printable Sales Agreement */}
               <div className="sales-agreement-print">
                 <div className="text-center mb-6">
-                  <img src="/logo.svg" alt="Average Autos" className="h-12 w-auto mx-auto mb-4" />
+                  <img src="/logo.svg" alt="GS Autos" className="h-12 w-auto mx-auto mb-4" />
                   <h1 className="text-2xl font-bold text-gray-900 mb-1">MOTOR VEHICLE SALES AGREEMENT</h1>
                   <p className="text-sm text-gray-600">New Zealand</p>
                   <p className="text-sm text-gray-600 mt-2">Agreement Date: {formatDate(selectedSale.sale_date)}</p>
