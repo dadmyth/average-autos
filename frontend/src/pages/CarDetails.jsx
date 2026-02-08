@@ -1123,6 +1123,47 @@ const CarDetails = () => {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     />
                   </div>
+
+                  {/* Profit Calculator */}
+                  {saleFormData.sale_price && (
+                    <div className="col-span-1 sm:col-span-2 bg-gray-50 rounded-lg p-3 sm:p-4 border border-gray-200">
+                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Profit Calculator</h4>
+                      <div className="grid grid-cols-3 gap-3 text-center">
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Total Investment</p>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {formatCurrency(parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0))}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Profit/Loss</p>
+                          <p className={`text-sm font-semibold ${
+                            (parseFloat(saleFormData.sale_price) - (parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0))) >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }`}>
+                            {formatCurrency(parseFloat(saleFormData.sale_price) - (parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0)))}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">Margin</p>
+                          <p className={`text-sm font-semibold ${
+                            ((parseFloat(saleFormData.sale_price) - (parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0))) / parseFloat(saleFormData.sale_price) * 100) >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }`}>
+                            {((parseFloat(saleFormData.sale_price) - (parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0))) / parseFloat(saleFormData.sale_price) * 100).toFixed(1)}%
+                          </p>
+                        </div>
+                      </div>
+                      {parseFloat(saleFormData.sale_price) < (parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0)) && (
+                        <p className="text-xs text-red-600 mt-2 text-center font-medium">
+                          ⚠️ Warning: Sale price is below total investment
+                        </p>
+                      )}
+                    </div>
+                  )}
+
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name *</label>
                     <input
