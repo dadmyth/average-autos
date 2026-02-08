@@ -7,10 +7,14 @@ import { dbRun, dbAll } from '../config/database.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const getUploadDir = (subdir) => process.env.UPLOAD_PATH
+  ? path.join(process.env.UPLOAD_PATH, subdir)
+  : path.join(__dirname, '../../uploads', subdir);
+
 // Configure multer for document upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/documents');
+    const uploadDir = getUploadDir('documents');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -105,7 +109,7 @@ export const deleteDocument = async (req, res) => {
     }
 
     // Delete file
-    const filePath = path.join(__dirname, '../../uploads/documents', filename);
+    const filePath = path.join(getUploadDir('documents'), filename);
     if (fs.existsSync(filePath)) {
       fs.unlinkSync(filePath);
     }

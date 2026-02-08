@@ -15,10 +15,14 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const getUploadDir = (subdir) => process.env.UPLOAD_PATH
+  ? path.join(process.env.UPLOAD_PATH, subdir)
+  : path.join(__dirname, '../../uploads', subdir);
+
 // Configure multer for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadDir = path.join(__dirname, '../../uploads/cars');
+    const uploadDir = getUploadDir('cars');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
@@ -159,7 +163,7 @@ export const removeCar = async (req, res, next) => {
     // Delete photos from filesystem
     if (car.photos && car.photos.length > 0) {
       car.photos.forEach(photo => {
-        const photoPath = path.join(__dirname, '../../uploads/cars', photo);
+        const photoPath = path.join(getUploadDir('cars'), photo);
         if (fs.existsSync(photoPath)) {
           fs.unlinkSync(photoPath);
         }
@@ -239,7 +243,7 @@ export const deletePhoto = async (req, res, next) => {
     const updatedPhotos = car.photos.filter(photo => photo !== filename);
 
     // Delete file from filesystem
-    const fullPath = path.join(__dirname, '../../uploads/cars', filename);
+    const fullPath = path.join(getUploadDir('cars'), filename);
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath);
     }
