@@ -1,15 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { getCars } from '../api/cars';
+import { Link, useNavigate } from 'react-router-dom';
+import { getCars, deleteCar } from '../api/cars';
+import { createSale } from '../api/sales';
 import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 import SkeletonCard from '../components/skeleton/SkeletonCard';
+import { useToast } from '../context/ToastContext';
 
 const Inventory = () => {
+  const navigate = useNavigate();
+  const { success, error: showError } = useToast();
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [showCarForm, setShowCarForm] = useState(false);
+  const [showQuickSell, setShowQuickSell] = useState(false);
   const [selectedCar, setSelectedCar] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -21,6 +26,19 @@ const Inventory = () => {
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
   const [sortBy, setSortBy] = useState('newest');
+
+  // Sale form state
+  const [saleFormData, setSaleFormData] = useState({
+    sale_date: new Date().toISOString().split('T')[0],
+    sale_price: '',
+    customer_name: '',
+    customer_email: '',
+    customer_phone: '',
+    customer_license_number: '',
+    customer_license_version: '',
+    payment_method: 'bank_transfer',
+    notes: ''
+  });
 
   useEffect(() => {
     fetchCars();
@@ -119,6 +137,56 @@ const Inventory = () => {
 
   const handleCarFormSuccess = () => {
     fetchCars();
+  };
+
+  const handleQuickSell = (car) => {
+    setSelectedCar(car);
+    setShowQuickSell(true);
+  };
+
+  const handleEdit = (car) => {
+    setSelectedCar(car);
+    setShowCarForm(true);
+  };
+
+  const handleDelete = async (car) => {
+    if (!confirm(`Are you sure you want to delete ${car.make} ${car.model} (${car.registration_plate})?`)) return;
+
+    try {
+      await deleteCar(car.id);
+      success('Car deleted successfully');
+      fetchCars();
+    } catch (error) {
+      showError(error.response?.data?.error || 'Failed to delete car');
+    }
+  };
+
+  const handleQuickSellSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await createSale({
+        car_id: selectedCar.id,
+        ...saleFormData,
+        sale_price: parseFloat(saleFormData.sale_price),
+        customer_license_number: saleFormData.customer_license_number.toUpperCase()
+      });
+      success(`Car marked as sold successfully!`);
+      setShowQuickSell(false);
+      setSaleFormData({
+        sale_date: new Date().toISOString().split('T')[0],
+        sale_price: '',
+        customer_name: '',
+        customer_email: '',
+        customer_phone: '',
+        customer_license_number: '',
+        customer_license_version: '',
+        payment_method: 'bank_transfer',
+        notes: ''
+      });
+      fetchCars();
+    } catch (error) {
+      showError(error.response?.data?.error || error.response?.data?.details?.join(', ') || 'Failed to create sale');
+    }
   };
 
   const clearFilters = () => {
@@ -300,7 +368,7 @@ const Inventory = () => {
       {/* Cars Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         {filteredCars.map((car) => (
-          <div key={car.id} className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+          <div key={car.id} className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6 relative group">
             <div className="flex justify-between items-start mb-2 sm:mb-3">
               <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                 {car.make} {car.model}
@@ -324,12 +392,48 @@ const Inventory = () => {
               )}
               <p><span className="font-medium">WOF Expiry:</span> {formatDate(car.wof_expiry)}</p>
             </div>
-            <Link
-              to={`/cars/${car.id}`}
-              className="block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
-            >
-              View Details
-            </Link>
+
+            {/* Quick Actions - shown on hover or always on mobile */}
+            <div className="flex gap-2 mb-3 sm:mb-0 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+              <Link
+                to={`/cars/${car.id}`}
+                className="flex-1 text-center bg-gray-100 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-200 text-xs sm:text-sm font-medium"
+              >
+                View
+              </Link>
+              {car.status === 'active' && (
+                <>
+                  <button
+                    onClick={() => handleQuickSell(car)}
+                    className="flex-1 bg-green-100 text-green-700 px-3 py-2 rounded-md hover:bg-green-200 text-xs sm:text-sm font-medium"
+                  >
+                    Sell
+                  </button>
+                  <button
+                    onClick={() => handleEdit(car)}
+                    className="flex-1 bg-blue-100 text-blue-700 px-3 py-2 rounded-md hover:bg-blue-200 text-xs sm:text-sm font-medium"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(car)}
+                    className="flex-1 bg-red-100 text-red-700 px-3 py-2 rounded-md hover:bg-red-200 text-xs sm:text-sm font-medium"
+                  >
+                    Delete
+                  </button>
+                </>
+              )}
+            </div>
+
+            {/* View Details link for sold cars or as fallback */}
+            {(car.status === 'sold' || true) && (
+              <Link
+                to={`/cars/${car.id}`}
+                className="block w-full text-center bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm sm:hidden"
+              >
+                View Details
+              </Link>
+            )}
           </div>
         ))}
       </div>
@@ -354,6 +458,105 @@ const Inventory = () => {
         onSuccess={handleCarFormSuccess}
         car={selectedCar}
       />
+
+      {/* Quick Sell Modal */}
+      {showQuickSell && selectedCar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3 sm:mb-4">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Quick Sell</h2>
+                  <p className="text-sm text-gray-600">{selectedCar.make} {selectedCar.model} ({selectedCar.registration_plate})</p>
+                </div>
+                <button onClick={() => setShowQuickSell(false)} className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <form onSubmit={handleQuickSellSubmit} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sale Date *</label>
+                    <input
+                      type="date"
+                      value={saleFormData.sale_date}
+                      onChange={(e) => setSaleFormData({ ...saleFormData, sale_date: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Sale Price (NZD) *</label>
+                    <input
+                      type="number"
+                      value={saleFormData.sale_price}
+                      onChange={(e) => setSaleFormData({ ...saleFormData, sale_price: e.target.value })}
+                      required
+                      min="0"
+                      step="0.01"
+                      placeholder={formatCurrency(selectedCar.purchase_price)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-sm"
+                    />
+                  </div>
+                  <div className="col-span-1 sm:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Customer Name *</label>
+                    <input
+                      type="text"
+                      value={saleFormData.customer_name}
+                      onChange={(e) => setSaleFormData({ ...saleFormData, customer_name: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                    <input
+                      type="tel"
+                      value={saleFormData.customer_phone}
+                      onChange={(e) => setSaleFormData({ ...saleFormData, customer_phone: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-sm"
+                      placeholder="021234567"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+                    <select
+                      value={saleFormData.payment_method}
+                      onChange={(e) => setSaleFormData({ ...saleFormData, payment_method: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-sm"
+                    >
+                      <option value="bank_transfer">Bank Transfer</option>
+                      <option value="cash">Cash</option>
+                      <option value="finance">Finance</option>
+                      <option value="trade_in">Trade-in</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowQuickSell(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 text-sm"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm"
+                  >
+                    Confirm Sale
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
