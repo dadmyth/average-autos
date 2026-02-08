@@ -29,19 +29,41 @@ export const getStatistics = async (req, res, next) => {
     const totalCosts = totalPurchaseCosts + totalServiceCosts;
 
     // Calculate profit (only for sold cars)
-    const soldCarIds = await dbAll("SELECT id FROM cars WHERE status = 'sold'");
-    let totalProfit = 0;
+    const soldCarsData = await dbAll(`
+      SELECT c.id, c.purchase_date, s.sale_date
+      FROM cars c
+      JOIN sales s ON c.id = s.car_id
+      WHERE c.status = 'sold'
+    `);
 
-    for (const car of soldCarIds) {
+    let totalProfit = 0;
+    let totalDaysToSell = 0;
+
+    for (const car of soldCarsData) {
       const costs = await getTotalCosts(car.id);
       const sale = await dbGet('SELECT sale_price FROM sales WHERE car_id = ?', [car.id]);
       if (sale) {
-        totalProfit += parseFloat(sale.sale_price) - costs.total_cost;
+        const profit = parseFloat(sale.sale_price) - costs.total_cost;
+        totalProfit += profit;
+
+        // Calculate days to sell
+        const purchaseDate = new Date(car.purchase_date);
+        const saleDate = new Date(car.sale_date);
+        const daysToSell = Math.floor((saleDate - purchaseDate) / (1000 * 60 * 60 * 24));
+        if (daysToSell >= 0) {
+          totalDaysToSell += daysToSell;
+        }
       }
     }
 
     // Get average profit per sale
     const averageProfit = soldCars > 0 ? totalProfit / soldCars : 0;
+
+    // Get average days to sell
+    const averageDaysToSell = soldCars > 0 ? totalDaysToSell / soldCars : 0;
+
+    // Get profit margin (as percentage)
+    const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
     res.json({
       success: true,
@@ -52,7 +74,9 @@ export const getStatistics = async (req, res, next) => {
         total_revenue: totalRevenue,
         total_costs: totalCosts,
         total_profit: totalProfit,
-        average_profit: averageProfit
+        average_profit: averageProfit,
+        average_days_to_sell: Math.round(averageDaysToSell),
+        profit_margin: profitMargin
       }
     });
   } catch (error) {

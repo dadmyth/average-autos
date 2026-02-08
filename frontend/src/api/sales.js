@@ -25,10 +25,24 @@ export const deleteSale = async (id) => {
   return response.data;
 };
 
+export const exportSalesCSV = async () => {
+  const response = await api.get('/sales/export', {
+    responseType: 'blob'
+  });
+  return response.data;
+};
+
+export const searchSalesByCustomer = async (query) => {
+  const response = await api.get('/sales/search', { params: { query } });
+  return response.data;
+};
+
 export default {
   getSales,
   getSale,
   createSale,
   updateSale,
-  deleteSale
+  deleteSale,
+  exportSalesCSV,
+  searchSalesByCustomer
 };

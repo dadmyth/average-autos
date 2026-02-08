@@ -44,6 +44,16 @@ export const deletePhoto = async (carId, filename) => {
   return response.data;
 };
 
+export const reorderPhotos = async (carId, photos) => {
+  const response = await api.put(`/cars/${carId}/photos/reorder`, { photos });
+  return response.data;
+};
+
+export const setCoverPhoto = async (carId, photoIndex) => {
+  const response = await api.put(`/cars/${carId}/photos/cover`, { photoIndex });
+  return response.data;
+};
+
 export const addServiceRecord = async (carId, serviceData) => {
   const response = await api.post(`/cars/${carId}/services`, serviceData);
   return response.data;
@@ -67,6 +77,8 @@ export default {
   deleteCar,
   uploadPhotos,
   deletePhoto,
+  reorderPhotos,
+  setCoverPhoto,
   addServiceRecord,
   updateServiceRecord,
   deleteServiceRecord

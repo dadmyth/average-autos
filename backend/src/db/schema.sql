@@ -105,6 +105,15 @@ CREATE TABLE IF NOT EXISTS purchases (
     FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
 );
 
+-- Activity Notes Table (for timestamped notes per car)
+CREATE TABLE IF NOT EXISTS activity_notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    car_id INTEGER NOT NULL,
+    note TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_cars_status ON cars(status);
 CREATE INDEX IF NOT EXISTS idx_cars_reg_expiry ON cars(registration_expiry);

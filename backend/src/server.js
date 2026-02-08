@@ -22,6 +22,7 @@ import dashboardRoutes from './routes/dashboard.js';
 import documentRoutes from './routes/documents.js';
 import settingsRoutes from './routes/settings.js';
 import purchaseRoutes from './routes/purchases.js';
+import noteRoutes from './routes/notes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -56,6 +57,7 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/purchases', purchaseRoutes);
+app.use('/api/notes', noteRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

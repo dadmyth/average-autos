@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCar, deleteCar, addServiceRecord, deleteServiceRecord, uploadPhotos, deletePhoto } from '../api/cars';
+import { getCar, deleteCar, addServiceRecord, deleteServiceRecord, uploadPhotos, deletePhoto, reorderPhotos, setCoverPhoto } from '../api/cars';
 import { createSale, deleteSale } from '../api/sales';
 import { uploadDocuments, getDocuments, deleteDocument } from '../api/documents';
 import { getSettings } from '../api/settings';
 import { createPurchase, getPurchaseByCarId, deletePurchase } from '../api/purchases';
+import { getNotesByCarId, createNote, deleteNote } from '../api/notes';
 import { formatCurrency, formatDate, getExpiryStatus, daysUntilExpiry, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 
@@ -26,6 +27,10 @@ const CarDetails = () => {
   const [showPurchaseAgreement, setShowPurchaseAgreement] = useState(false);
   const [purchaseRecord, setPurchaseRecord] = useState(null);
   const [businessDetails, setBusinessDetails] = useState({ business_name: '', business_phone: '', business_email: '' });
+  const [notes, setNotes] = useState([]);
+  const [newNote, setNewNote] = useState('');
+  const [showNoteForm, setShowNoteForm] = useState(false);
+  const [reorderMode, setReorderMode] = useState(false);
   const [serviceFormData, setServiceFormData] = useState({
     service_date: '',
     service_type: 'maintenance',
@@ -77,12 +82,14 @@ const CarDetails = () => {
 
   const fetchCarDetails = async () => {
     try {
-      const [carResponse, docsResponse] = await Promise.all([
+      const [carResponse, docsResponse, notesResponse] = await Promise.all([
         getCar(id),
-        getDocuments(id)
+        getDocuments(id),
+        getNotesByCarId(id)
       ]);
       setCar(carResponse.data);
       setDocuments(docsResponse.data || []);
+      setNotes(notesResponse.data || []);
       // Fetch purchase record if exists
       try {
         const purchaseResponse = await getPurchaseByCarId(id);
@@ -198,6 +205,30 @@ const CarDetails = () => {
     }
   };
 
+  const handleAddNote = async () => {
+    if (!newNote.trim()) return;
+
+    try {
+      const response = await createNote(id, newNote.trim());
+      setNotes([response.data, ...notes]);
+      setNewNote('');
+      setShowNoteForm(false);
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to add note');
+    }
+  };
+
+  const handleDeleteNote = async (noteId) => {
+    if (!confirm('Are you sure you want to delete this note?')) return;
+
+    try {
+      await deleteNote(noteId);
+      setNotes(notes.filter(note => note.id !== noteId));
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to delete note');
+    }
+  };
+
   const handlePhotoUpload = async (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -222,6 +253,32 @@ const CarDetails = () => {
       fetchCarDetails();
     } catch (error) {
       alert(error.response?.data?.error || 'Failed to delete photo');
+    }
+  };
+
+  const handleMovePhoto = async (fromIndex, direction) => {
+    const photos = [...car.photos];
+    const toIndex = direction === 'left' ? fromIndex - 1 : fromIndex + 1;
+
+    if (toIndex < 0 || toIndex >= photos.length) return;
+
+    // Swap photos
+    [photos[fromIndex], photos[toIndex]] = [photos[toIndex], photos[fromIndex]];
+
+    try {
+      await reorderPhotos(id, photos);
+      setCar({ ...car, photos });
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to reorder photos');
+    }
+  };
+
+  const handleSetCoverPhoto = async (photoIndex) => {
+    try {
+      const response = await setCoverPhoto(id, photoIndex);
+      setCar(response.data);
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to set cover photo');
     }
   };
 
@@ -393,31 +450,89 @@ const CarDetails = () => {
             </div>
 
             {car.photos && car.photos.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {car.photos.map((photo, index) => (
-                  <div key={index} className="relative group">
-                    <img
-                      src={`/uploads/cars/${photo}`}
-                      alt={`${car.make} ${car.model}`}
-                      className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
-                      onClick={() => setLightboxImage(`/uploads/cars/${photo}`)}
-                    />
-                    {car.status === 'active' && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handlePhotoDelete(photo);
-                        }}
-                        className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="flex justify-between items-center mb-3">
+                  <p className="text-sm text-gray-600">{car.photos.length} photo{car.photos.length !== 1 ? 's' : ''}</p>
+                  {car.status === 'active' && car.photos.length > 1 && (
+                    <button
+                      onClick={() => setReorderMode(!reorderMode)}
+                      className={`text-sm px-3 py-1 rounded-md ${
+                        reorderMode
+                          ? 'bg-purple-600 text-white hover:bg-purple-700'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      {reorderMode ? 'Done Reordering' : 'Reorder Photos'}
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {car.photos.map((photo, index) => (
+                    <div key={index} className={`relative ${reorderMode ? 'border-2 border-dashed border-purple-400 rounded-lg p-1' : 'group'}`}>
+                      <img
+                        src={`/uploads/cars/${photo}`}
+                        alt={`${car.make} ${car.model}`}
+                        className="w-full h-48 object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                        onClick={() => !reorderMode && setLightboxImage(`/uploads/cars/${photo}`)}
+                      />
+                      {index === 0 && !reorderMode && (
+                        <div className="absolute top-2 left-2 bg-green-600 text-white text-xs px-2 py-1 rounded-full font-semibold">
+                          Cover
+                        </div>
+                      )}
+                      {car.status === 'active' && (
+                        <>
+                          {reorderMode ? (
+                            <div className="absolute inset-0 flex items-center justify-center gap-3 bg-black/50 rounded-lg">
+                              <button
+                                onClick={() => handleMovePhoto(index, 'left')}
+                                disabled={index === 0}
+                                className="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleMovePhoto(index, 'right')}
+                                disabled={index === car.photos.length - 1}
+                                className="bg-white text-gray-800 p-2 rounded-full hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                              </button>
+                              {index !== 0 && (
+                                <button
+                                  onClick={() => handleSetCoverPhoto(index)}
+                                  className="bg-green-600 text-white p-2 rounded-full hover:bg-green-700"
+                                  title="Set as cover photo"
+                                >
+                                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePhotoDelete(photo);
+                              }}
+                              className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
             ) : (
               <p className="text-gray-500 text-center py-8">No photos uploaded yet</p>
             )}
@@ -626,6 +741,83 @@ const CarDetails = () => {
               </div>
             ) : (
               <p className="text-gray-500">No expense records yet</p>
+            )}
+          </div>
+
+          {/* Activity Notes */}
+          <div className="bg-white shadow rounded-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900">Activity Notes</h2>
+              <button
+                onClick={() => setShowNoteForm(!showNoteForm)}
+                className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm"
+              >
+                {showNoteForm ? 'Cancel' : 'Add Note'}
+              </button>
+            </div>
+
+            {showNoteForm && (
+              <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+                <textarea
+                  value={newNote}
+                  onChange={(e) => setNewNote(e.target.value)}
+                  placeholder="Enter your note (e.g., 'Customer John enquired about this car', 'Dropped price to $8000', etc.)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                  rows="3"
+                  autoFocus
+                />
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={handleAddNote}
+                    disabled={!newNote.trim()}
+                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    Save Note
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowNoteForm(false);
+                      setNewNote('');
+                    }}
+                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {notes.length > 0 ? (
+              <div className="space-y-3">
+                {notes.map((note) => (
+                  <div key={note.id} className="border-l-4 border-purple-500 pl-4 py-2 bg-purple-50">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <p className="text-gray-900">{note.note}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(note.created_at).toLocaleString('en-NZ', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="text-red-600 hover:text-red-800 ml-3"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">No activity notes yet. Add notes to track customer enquiries, price changes, etc.</p>
             )}
           </div>
 

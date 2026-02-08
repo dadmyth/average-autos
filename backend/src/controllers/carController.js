@@ -9,7 +9,9 @@ import {
   getCarWithServices,
   updateCar,
   deleteCar,
-  getTotalCosts
+  getTotalCosts,
+  reorderPhotos,
+  setCoverPhoto
 } from '../models/Car.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -261,6 +263,56 @@ export const deletePhoto = async (req, res, next) => {
   }
 };
 
+// Reorder photos
+export const reorderCarPhotos = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { photos } = req.body;
+
+    if (!Array.isArray(photos)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Photos must be an array'
+      });
+    }
+
+    const updatedCar = await reorderPhotos(id, photos);
+
+    res.json({
+      success: true,
+      data: updatedCar,
+      message: 'Photos reordered successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Set cover photo
+export const setCarCoverPhoto = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { photoIndex } = req.body;
+
+    if (typeof photoIndex !== 'number' || photoIndex < 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid photo index'
+      });
+    }
+
+    const updatedCar = await setCoverPhoto(id, photoIndex);
+
+    res.json({
+      success: true,
+      data: updatedCar,
+      message: 'Cover photo set successfully'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getCars,
   getCar,
@@ -269,5 +321,7 @@ export default {
   removeCar,
   uploadPhotos,
   deletePhoto,
+  reorderCarPhotos,
+  setCarCoverPhoto,
   upload
 };

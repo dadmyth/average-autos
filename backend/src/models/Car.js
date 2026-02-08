@@ -205,6 +205,47 @@ export const getTotalCosts = async (carId) => {
   };
 };
 
+export const reorderPhotos = async (carId, photos) => {
+  const car = await getCarById(carId);
+  if (!car) {
+    throw new Error('Car not found');
+  }
+
+  await dbRun(
+    'UPDATE cars SET photos = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [JSON.stringify(photos), carId]
+  );
+
+  return await getCarById(carId);
+};
+
+export const setCoverPhoto = async (carId, photoIndex) => {
+  const car = await getCarById(carId);
+  if (!car) {
+    throw new Error('Car not found');
+  }
+
+  if (!car.photos || car.photos.length === 0) {
+    throw new Error('No photos found');
+  }
+
+  if (photoIndex < 0 || photoIndex >= car.photos.length) {
+    throw new Error('Invalid photo index');
+  }
+
+  // Move the selected photo to the front
+  const newPhotos = [...car.photos];
+  const [coverPhoto] = newPhotos.splice(photoIndex, 1);
+  newPhotos.unshift(coverPhoto);
+
+  await dbRun(
+    'UPDATE cars SET photos = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+    [JSON.stringify(newPhotos), carId]
+  );
+
+  return await getCarById(carId);
+};
+
 export default {
   createCar,
   getAllCars,
@@ -212,5 +253,7 @@ export default {
   getCarWithServices,
   updateCar,
   deleteCar,
-  getTotalCosts
+  getTotalCosts,
+  reorderPhotos,
+  setCoverPhoto
 };

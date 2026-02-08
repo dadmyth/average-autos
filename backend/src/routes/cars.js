@@ -7,6 +7,8 @@ import {
   removeCar,
   uploadPhotos,
   deletePhoto,
+  reorderCarPhotos,
+  setCarCoverPhoto,
   upload
 } from '../controllers/carController.js';
 import {
@@ -33,6 +35,8 @@ router.delete('/:id', removeCar);
 // Photo routes
 router.post('/:id/photos', upload.array('photos', 10), uploadPhotos);
 router.delete('/:id/photos/:filename', deletePhoto);
+router.put('/:id/photos/reorder', reorderCarPhotos);
+router.put('/:id/photos/cover', setCarCoverPhoto);
 
 // Service record routes
 router.get('/:id/services', getCarServices);

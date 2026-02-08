@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getStatistics, getExpiryAlerts, getAgingStock } from '../api/dashboard';
+import { getStatistics, getExpiryAlerts, getAgingStock, getMonthlySales } from '../api/dashboard';
 import { getCars } from '../api/cars';
 import { getSales } from '../api/sales';
 import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
@@ -12,23 +12,26 @@ const Dashboard = () => {
   const [agingStock, setAgingStock] = useState([]);
   const [activeCars, setActiveCars] = useState([]);
   const [sales, setSales] = useState([]);
+  const [monthlySales, setMonthlySales] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [statsData, alertsData, agingData, carsData, salesData] = await Promise.all([
+        const [statsData, alertsData, agingData, carsData, salesData, monthlyData] = await Promise.all([
           getStatistics(),
           getExpiryAlerts(),
           getAgingStock(),
           getCars({ status: 'active' }),
-          getSales()
+          getSales(),
+          getMonthlySales()
         ]);
         setStats(statsData.data);
         setAlerts(alertsData.data);
         setAgingStock(agingData.data);
         setActiveCars(carsData.data);
         setSales(salesData.data || []);
+        setMonthlySales(monthlyData.data || []);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -95,6 +98,39 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Quick Stats Row */}
+      {stats?.sold_cars > 0 && (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-4 sm:p-5">
+              <dt className="text-sm font-medium text-gray-500 truncate">Avg Days to Sell</dt>
+              <dd className="mt-1 text-2xl sm:text-3xl font-semibold text-blue-600">
+                {stats?.average_days_to_sell || 0}
+                <span className="text-base font-normal text-gray-500 ml-1">days</span>
+              </dd>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-4 sm:p-5">
+              <dt className="text-sm font-medium text-gray-500 truncate">Profit Margin</dt>
+              <dd className="mt-1 text-2xl sm:text-3xl font-semibold text-purple-600">
+                {stats?.profit_margin?.toFixed(1) || 0}%
+              </dd>
+            </div>
+          </div>
+
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-4 sm:p-5">
+              <dt className="text-sm font-medium text-gray-500 truncate">Avg Profit per Sale</dt>
+              <dd className="mt-1 text-2xl sm:text-3xl font-semibold text-green-600">
+                {formatCurrency(stats?.average_profit || 0)}
+              </dd>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Alerts Section */}
       {totalAlertCount > 0 && (
@@ -267,6 +303,40 @@ const Dashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Monthly Sales Trend Chart */}
+      {monthlySales.length > 0 && (
+        <div className="bg-white shadow rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Monthly Sales Trend (Last 12 Months)</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={[...monthlySales].reverse()}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis
+                dataKey="month"
+                tickFormatter={(value) => {
+                  const [year, month] = value.split('-');
+                  return new Date(year, month - 1).toLocaleDateString('en-NZ', { month: 'short', year: '2-digit' });
+                }}
+              />
+              <YAxis yAxisId="left" orientation="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <Tooltip
+                formatter={(value, name) => {
+                  if (name === 'revenue') return formatCurrency(value);
+                  return value;
+                }}
+                labelFormatter={(value) => {
+                  const [year, month] = value.split('-');
+                  return new Date(year, month - 1).toLocaleDateString('en-NZ', { month: 'long', year: 'numeric' });
+                }}
+              />
+              <Legend />
+              <Bar yAxisId="left" dataKey="count" fill="#3b82f6" name="Cars Sold" />
+              <Bar yAxisId="right" dataKey="revenue" fill="#10b981" name="Revenue" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       {/* Active Stock */}
       <div className="bg-white shadow rounded-lg p-4 sm:p-6">

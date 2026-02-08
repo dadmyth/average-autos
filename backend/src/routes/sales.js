@@ -5,7 +5,9 @@ import {
   addSale,
   editSale,
   getSaleByCarIdController,
-  removeSale
+  removeSale,
+  exportSalesCSV,
+  searchSalesByCustomer
 } from '../controllers/saleController.js';
 import authenticateToken from '../middleware/auth.js';
 import { validateSaleData } from '../middleware/validation.js';
@@ -16,6 +18,8 @@ const router = express.Router();
 router.use(authenticateToken);
 
 router.get('/', getSales);
+router.get('/export', exportSalesCSV);
+router.get('/search', searchSalesByCustomer);
 router.get('/:id', getSale);
 router.post('/', validateSaleData, addSale);
 router.put('/:id', editSale);
