@@ -6,6 +6,7 @@ import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 import SkeletonCard from '../components/skeleton/SkeletonCard';
 import { useToast } from '../context/ToastContext';
+import EmptyState from '../components/empty/EmptyState';
 
 const Inventory = () => {
   const navigate = useNavigate();
@@ -439,16 +440,21 @@ const Inventory = () => {
       </div>
 
       {filteredCars.length === 0 && cars.length > 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No cars match your filters.{' '}
-          <button onClick={clearFilters} className="text-gray-800 hover:underline font-medium">Clear filters</button>
-        </div>
+        <EmptyState
+          title="No cars match your filters"
+          message="Try adjusting your search or filter criteria to find what you're looking for."
+          action={clearFilters}
+          actionLabel="Clear Filters"
+        />
       )}
 
-      {cars.length === 0 && (
-        <div className="text-center py-12 text-gray-500">
-          No cars found. Add your first car to get started!
-        </div>
+      {cars.length === 0 && !loading && (
+        <EmptyState
+          title="No cars in inventory"
+          message="Get started by adding your first car to track your inventory."
+          action={handleAddCar}
+          actionLabel="Add Your First Car"
+        />
       )}
 
       {/* Car Form Modal */}
