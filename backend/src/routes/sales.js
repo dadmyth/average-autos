@@ -4,7 +4,8 @@ import {
   getSale,
   addSale,
   editSale,
-  getSaleByCarIdController
+  getSaleByCarIdController,
+  removeSale
 } from '../controllers/saleController.js';
 import authenticateToken from '../middleware/auth.js';
 import { validateSaleData } from '../middleware/validation.js';
@@ -18,6 +19,7 @@ router.get('/', getSales);
 router.get('/:id', getSale);
 router.post('/', validateSaleData, addSale);
 router.put('/:id', editSale);
+router.delete('/:id', removeSale);
 router.get('/car/:carId', getSaleByCarIdController);
 
 export default router;

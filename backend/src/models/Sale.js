@@ -123,10 +123,26 @@ export const updateSale = async (id, saleData) => {
   return await getSaleById(id);
 };
 
+export const deleteSale = async (id) => {
+  const sale = await getSaleById(id);
+  if (!sale) {
+    throw new Error('Sale not found');
+  }
+
+  // Delete the sale record
+  await dbRun('DELETE FROM sales WHERE id = ?', [id]);
+
+  // Revert car status back to active
+  await updateCar(sale.car_id, { status: 'active' });
+
+  return sale;
+};
+
 export default {
   createSale,
   getSaleById,
   getSaleByCarId,
   getAllSales,
-  updateSale
+  updateSale,
+  deleteSale
 };

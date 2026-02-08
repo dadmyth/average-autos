@@ -3,7 +3,8 @@ import {
   getSaleById,
   getSaleByCarId,
   getAllSales,
-  updateSale
+  updateSale,
+  deleteSale
 } from '../models/Sale.js';
 import { getTotalCosts } from '../models/Car.js';
 
@@ -149,10 +150,34 @@ export const getSaleByCarIdController = async (req, res, next) => {
   }
 };
 
+export const removeSale = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const existingSale = await getSaleById(id);
+    if (!existingSale) {
+      return res.status(404).json({
+        success: false,
+        error: 'Sale not found'
+      });
+    }
+
+    await deleteSale(id);
+
+    res.json({
+      success: true,
+      message: 'Sale cancelled and car returned to active inventory'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export default {
   getSales,
   getSale,
   addSale,
   editSale,
-  getSaleByCarIdController
+  getSaleByCarIdController,
+  removeSale
 };

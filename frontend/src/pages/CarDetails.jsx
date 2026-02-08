@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getCar, deleteCar, addServiceRecord, deleteServiceRecord, uploadPhotos, deletePhoto } from '../api/cars';
-import { createSale } from '../api/sales';
+import { createSale, deleteSale } from '../api/sales';
 import { uploadDocuments, getDocuments, deleteDocument } from '../api/documents';
 import { getSettings } from '../api/settings';
+import { createPurchase, getPurchaseByCarId, deletePurchase } from '../api/purchases';
 import { formatCurrency, formatDate, getExpiryStatus, daysUntilExpiry, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 
@@ -21,6 +22,9 @@ const CarDetails = () => {
   const [documentType, setDocumentType] = useState('other');
   const [lightboxImage, setLightboxImage] = useState(null);
   const [showSalesAgreement, setShowSalesAgreement] = useState(false);
+  const [showPurchaseForm, setShowPurchaseForm] = useState(false);
+  const [showPurchaseAgreement, setShowPurchaseAgreement] = useState(false);
+  const [purchaseRecord, setPurchaseRecord] = useState(null);
   const [businessDetails, setBusinessDetails] = useState({ business_name: '', business_phone: '', business_email: '' });
   const [serviceFormData, setServiceFormData] = useState({
     service_date: '',
@@ -41,6 +45,17 @@ const CarDetails = () => {
     payment_method: 'bank_transfer',
     payment_status: 'completed',
     payment_notes: '',
+    notes: ''
+  });
+
+  const [purchaseFormData, setPurchaseFormData] = useState({
+    seller_name: '',
+    seller_email: '',
+    seller_phone: '',
+    seller_address: '',
+    seller_license_number: '',
+    seller_license_version: '',
+    payment_method: 'cash',
     notes: ''
   });
 
@@ -68,6 +83,13 @@ const CarDetails = () => {
       ]);
       setCar(carResponse.data);
       setDocuments(docsResponse.data || []);
+      // Fetch purchase record if exists
+      try {
+        const purchaseResponse = await getPurchaseByCarId(id);
+        setPurchaseRecord(purchaseResponse.data);
+      } catch {
+        setPurchaseRecord(null);
+      }
     } catch (error) {
       console.error('Error fetching car details:', error);
     } finally {
@@ -132,6 +154,47 @@ const CarDetails = () => {
       navigate('/sales');
     } catch (error) {
       alert(error.response?.data?.error || error.response?.data?.details?.join(', ') || 'Failed to create sale');
+    }
+  };
+
+  const handleCancelSale = async () => {
+    if (!confirm('Are you sure you want to cancel this sale? The car will be returned to active inventory.')) return;
+
+    try {
+      await deleteSale(car.sale.id);
+      alert('Sale cancelled successfully. Car returned to active inventory.');
+      fetchCarDetails();
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to cancel sale');
+    }
+  };
+
+  const handlePurchaseSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await createPurchase({
+        car_id: parseInt(id),
+        purchase_date: car.purchase_date,
+        purchase_price: parseFloat(car.purchase_price),
+        ...purchaseFormData,
+        seller_license_number: purchaseFormData.seller_license_number.toUpperCase()
+      });
+      alert('Purchase agreement created successfully!');
+      setShowPurchaseForm(false);
+      fetchCarDetails();
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to create purchase agreement');
+    }
+  };
+
+  const handleDeletePurchase = async () => {
+    if (!confirm('Are you sure you want to delete this purchase agreement?')) return;
+
+    try {
+      await deletePurchase(purchaseRecord.id);
+      setPurchaseRecord(null);
+    } catch (error) {
+      alert(error.response?.data?.error || 'Failed to delete purchase agreement');
     }
   };
 
@@ -566,20 +629,67 @@ const CarDetails = () => {
             )}
           </div>
 
-          {/* Sale Information */}
-          {car.sale && (
+          {/* Purchase Information */}
+          {purchaseRecord && (
             <div className="bg-white shadow rounded-lg p-6">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Sale Information</h2>
+                <h2 className="text-xl font-bold text-gray-900">Purchase Information</h2>
                 <button
-                  onClick={() => setShowSalesAgreement(true)}
+                  onClick={() => setShowPurchaseAgreement(true)}
                   className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm flex items-center gap-2"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
-                  Sales Agreement
+                  Purchase Agreement
                 </button>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-500">Purchased From</p>
+                  <p className="font-medium">{purchaseRecord.seller_name}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Purchase Date</p>
+                  <p className="font-medium">{formatDate(purchaseRecord.purchase_date)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Purchase Price</p>
+                  <p className="font-medium">{formatCurrency(purchaseRecord.purchase_price)}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">Payment Method</p>
+                  <p className="font-medium">{purchaseRecord.payment_method.replace('_', ' ')}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Sale Information */}
+          {car.sale && (
+            <div className="bg-white shadow rounded-lg p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Sale Information</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowSalesAgreement(true)}
+                    className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Sales Agreement
+                  </button>
+                  <button
+                    onClick={handleCancelSale}
+                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 text-sm flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel Sale
+                  </button>
+                </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -651,6 +761,32 @@ const CarDetails = () => {
                 >
                   Edit Car
                 </button>
+                {!purchaseRecord ? (
+                  <button
+                    onClick={() => setShowPurchaseForm(true)}
+                    className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
+                  >
+                    Create Purchase Agreement
+                  </button>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowPurchaseAgreement(true)}
+                      className="flex-1 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm"
+                    >
+                      View Purchase Agreement
+                    </button>
+                    <button
+                      onClick={handleDeletePurchase}
+                      className="bg-red-600 text-white px-3 py-2 rounded-md hover:bg-red-700 text-sm"
+                      title="Delete purchase agreement"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
                 <button
                   onClick={() => setShowSaleForm(!showSaleForm)}
                   className="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
@@ -812,6 +948,302 @@ const CarDetails = () => {
               </form>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Purchase Agreement Form Modal */}
+      {showPurchaseForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">Create Purchase Agreement</h2>
+                <button onClick={() => setShowPurchaseForm(false)} className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <p className="text-sm text-gray-500 mb-4">
+                Purchase date ({formatDate(car.purchase_date)}) and price ({formatCurrency(car.purchase_price)}) will be taken from the car record.
+              </p>
+
+              <form onSubmit={handlePurchaseSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Seller Name *</label>
+                    <input
+                      type="text"
+                      value={purchaseFormData.seller_name}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, seller_name: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Seller Email</label>
+                    <input
+                      type="email"
+                      value={purchaseFormData.seller_email}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, seller_email: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Seller Phone *</label>
+                    <input
+                      type="tel"
+                      value={purchaseFormData.seller_phone}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, seller_phone: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                      placeholder="021234567"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Seller Address</label>
+                    <input
+                      type="text"
+                      value={purchaseFormData.seller_address}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, seller_address: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">License Number *</label>
+                    <input
+                      type="text"
+                      value={purchaseFormData.seller_license_number}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, seller_license_number: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 uppercase"
+                      placeholder="AA123456"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">License Version</label>
+                    <input
+                      type="text"
+                      value={purchaseFormData.seller_license_version}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, seller_license_version: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+                    <select
+                      value={purchaseFormData.payment_method}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, payment_method: e.target.value })}
+                      required
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    >
+                      <option value="cash">Cash</option>
+                      <option value="bank_transfer">Bank Transfer</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea
+                      value={purchaseFormData.notes}
+                      onChange={(e) => setPurchaseFormData({ ...purchaseFormData, notes: e.target.value })}
+                      rows="3"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                      placeholder="e.g. Trade-in on sale of ABC123"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end space-x-3 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setShowPurchaseForm(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
+                  >
+                    Create Agreement
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Purchase Agreement View Modal */}
+      {showPurchaseAgreement && purchaseRecord && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6 print:hidden">
+                <h2 className="text-2xl font-bold text-gray-900">Purchase Agreement</h2>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => window.print()}
+                    className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Print / Save PDF
+                  </button>
+                  <button
+                    onClick={() => setShowPurchaseAgreement(false)}
+                    className="text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="sales-agreement-print">
+                <div className="text-center mb-6">
+                  <img src="/logo.svg" alt="GS Autos" className="h-12 w-auto mx-auto mb-4" />
+                  <h1 className="text-2xl font-bold text-gray-900 mb-1">MOTOR VEHICLE PURCHASE AGREEMENT</h1>
+                  <p className="text-sm text-gray-600">New Zealand</p>
+                  <p className="text-sm text-gray-600 mt-2">Agreement Date: {formatDate(purchaseRecord.purchase_date)}</p>
+                </div>
+
+                <div className="mb-6">
+                  <h2 className="text-base font-bold text-gray-900 mb-3 border-b pb-2">PARTIES</h2>
+                  <div className="grid grid-cols-2 gap-8">
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2 text-sm">SELLER</h3>
+                      <p className="text-sm text-gray-700">{purchaseRecord.seller_name}</p>
+                      {purchaseRecord.seller_email && (
+                        <p className="text-sm text-gray-700">Email: {purchaseRecord.seller_email}</p>
+                      )}
+                      <p className="text-sm text-gray-700">Phone: {purchaseRecord.seller_phone}</p>
+                      {purchaseRecord.seller_address && (
+                        <p className="text-sm text-gray-700">Address: {purchaseRecord.seller_address}</p>
+                      )}
+                      <p className="text-sm text-gray-700">License: {purchaseRecord.seller_license_number}</p>
+                      {purchaseRecord.seller_license_version && (
+                        <p className="text-sm text-gray-700">Version: {purchaseRecord.seller_license_version}</p>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2 text-sm">BUYER</h3>
+                      <p className="text-sm text-gray-700">{businessDetails.business_name}</p>
+                      <p className="text-sm text-gray-700">Phone: {businessDetails.business_phone}</p>
+                      <p className="text-sm text-gray-700">Email: {businessDetails.business_email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h2 className="text-base font-bold text-gray-900 mb-3 border-b pb-2">VEHICLE DETAILS</h2>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Registration Plate:</span>
+                      <span className="text-sm text-gray-900">{car.registration_plate}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Make & Model:</span>
+                      <span className="text-sm text-gray-900">{car.make} {car.model}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Year:</span>
+                      <span className="text-sm text-gray-900">{car.year}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Color:</span>
+                      <span className="text-sm text-gray-900">{car.color || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Odometer:</span>
+                      <span className="text-sm text-gray-900">{car.odometer ? `${car.odometer.toLocaleString()} km` : 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">VIN:</span>
+                      <span className="text-sm text-gray-900 truncate ml-2">{car.vin || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">WOF Expiry:</span>
+                      <span className="text-sm text-gray-900">{formatDate(car.wof_expiry)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Registration Expiry:</span>
+                      <span className="text-sm text-gray-900">{formatDate(car.registration_expiry)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h2 className="text-base font-bold text-gray-900 mb-3 border-b pb-2">PURCHASE DETAILS</h2>
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Purchase Price:</span>
+                      <span className="text-lg font-bold text-gray-900">{formatCurrency(purchaseRecord.purchase_price)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-sm font-semibold text-gray-700">Payment Method:</span>
+                      <span className="text-sm text-gray-900">{purchaseRecord.payment_method.replace('_', ' ').toUpperCase()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h2 className="text-base font-bold text-gray-900 mb-3 border-b pb-2">TERMS AND CONDITIONS</h2>
+                  <ol className="list-decimal list-inside space-y-1.5 text-sm text-gray-700 leading-relaxed">
+                    <li>The Seller warrants that they are the legal owner of the vehicle and have the right to sell it.</li>
+                    <li>The Seller warrants that the vehicle is free from any encumbrances, liens, or finance agreements.</li>
+                    <li>The Buyer has inspected the vehicle and accepts it in its current condition.</li>
+                    <li>The Seller agrees to provide all relevant documentation for the transfer of ownership.</li>
+                    <li>The Seller is responsible for ensuring the vehicle is not subject to any outstanding fines or fees.</li>
+                    <li>Both parties agree to complete the transfer of registration in a timely manner.</li>
+                    <li>This agreement is governed by the laws of New Zealand.</li>
+                  </ol>
+                </div>
+
+                <div className="mb-6">
+                  <h2 className="text-base font-bold text-gray-900 mb-3 border-b pb-2">SIGNATURES</h2>
+                  <div className="grid grid-cols-2 gap-8">
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-2 text-sm">SELLER</p>
+                      <div className="border-b-2 border-gray-400 mb-2 h-12"></div>
+                      <p className="text-xs text-gray-600">Signature</p>
+                      <p className="text-xs text-gray-600 mt-3">Date: _______________</p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-2 text-sm">BUYER</p>
+                      <div className="border-b-2 border-gray-400 mb-2 h-12"></div>
+                      <p className="text-xs text-gray-600">Signature</p>
+                      <p className="text-xs text-gray-600 mt-3">Date: _______________</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center text-xs text-gray-500 mt-6 pt-3 border-t">
+                  <p>This is a legally binding agreement. Both parties should retain a copy for their records.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <style>{`
+            @media print {
+              @page { size: A4; margin: 1.5cm; }
+              body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+              body * { visibility: hidden; }
+              .sales-agreement-print, .sales-agreement-print * { visibility: visible; }
+              .sales-agreement-print { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; }
+              .print\\:hidden { display: none !important; }
+              .sales-agreement-print * { color: #000 !important; background: transparent !important; }
+              .border-b { border-bottom: 1px solid #000 !important; }
+              .border-t { border-top: 1px solid #000 !important; }
+              .border-b-2 { border-bottom: 2px solid #000 !important; }
+              .sales-agreement-print h1, .sales-agreement-print h2, .sales-agreement-print h3 { page-break-after: avoid; }
+              .sales-agreement-print ol, .sales-agreement-print div { page-break-inside: avoid; }
+            }
+          `}</style>
         </div>
       )}
 

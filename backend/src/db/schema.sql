@@ -87,6 +87,24 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT OR IGNORE INTO settings (id, business_name, business_phone, business_email, business_address)
 VALUES (1, 'GS Autos Ltd', '027 246 6660', 'joshc88@pm.me', '');
 
+-- Purchases Table (for buying vehicles from the public / trade-ins)
+CREATE TABLE IF NOT EXISTS purchases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    car_id INTEGER NOT NULL,
+    purchase_date DATE NOT NULL,
+    purchase_price DECIMAL(10,2) NOT NULL,
+    seller_name TEXT NOT NULL,
+    seller_email TEXT,
+    seller_phone TEXT NOT NULL,
+    seller_address TEXT,
+    seller_license_number TEXT NOT NULL,
+    seller_license_version TEXT,
+    payment_method TEXT NOT NULL, -- 'cash', 'bank_transfer', 'other'
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_cars_status ON cars(status);
 CREATE INDEX IF NOT EXISTS idx_cars_reg_expiry ON cars(registration_expiry);
@@ -95,3 +113,4 @@ CREATE INDEX IF NOT EXISTS idx_service_records_car_id ON service_records(car_id)
 CREATE INDEX IF NOT EXISTS idx_sales_car_id ON sales(car_id);
 CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(sale_date);
 CREATE INDEX IF NOT EXISTS idx_documents_car_id ON documents(car_id);
+CREATE INDEX IF NOT EXISTS idx_purchases_car_id ON purchases(car_id);
