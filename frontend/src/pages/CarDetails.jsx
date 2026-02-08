@@ -8,10 +8,12 @@ import { createPurchase, getPurchaseByCarId, deletePurchase } from '../api/purch
 import { getNotesByCarId, createNote, deleteNote } from '../api/notes';
 import { formatCurrency, formatDate, getExpiryStatus, daysUntilExpiry, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
+import { useToast } from '../context/ToastContext';
 
 const CarDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { success, error: showError } = useToast();
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showServiceForm, setShowServiceForm] = useState(false);
@@ -111,7 +113,7 @@ const CarDetails = () => {
       await deleteCar(id);
       navigate('/inventory');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to delete car');
+      showError(error.response?.data?.error || 'Failed to delete car');
     }
   };
 
@@ -132,8 +134,9 @@ const CarDetails = () => {
         notes: ''
       });
       fetchCarDetails();
+      success('Service record added successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to add service record');
+      showError(error.response?.data?.error || 'Failed to add service record');
     }
   };
 
@@ -143,8 +146,9 @@ const CarDetails = () => {
     try {
       await deleteServiceRecord(serviceId);
       fetchCarDetails();
+      success('Service record deleted successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to delete service record');
+      showError(error.response?.data?.error || 'Failed to delete service record');
     }
   };
 
@@ -157,10 +161,10 @@ const CarDetails = () => {
         sale_price: parseFloat(saleFormData.sale_price),
         customer_license_number: saleFormData.customer_license_number.toUpperCase()
       });
-      alert('Car marked as sold successfully!');
+      success('Car marked as sold successfully!');
       navigate('/sales');
     } catch (error) {
-      alert(error.response?.data?.error || error.response?.data?.details?.join(', ') || 'Failed to create sale');
+      showError(error.response?.data?.error || error.response?.data?.details?.join(', ') || 'Failed to create sale');
     }
   };
 
@@ -169,10 +173,10 @@ const CarDetails = () => {
 
     try {
       await deleteSale(car.sale.id);
-      alert('Sale cancelled successfully. Car returned to active inventory.');
+      success('Sale cancelled successfully. Car returned to active inventory.');
       fetchCarDetails();
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to cancel sale');
+      showError(error.response?.data?.error || 'Failed to cancel sale');
     }
   };
 
@@ -186,11 +190,11 @@ const CarDetails = () => {
         ...purchaseFormData,
         seller_license_number: purchaseFormData.seller_license_number.toUpperCase()
       });
-      alert('Purchase agreement created successfully!');
+      success('Purchase agreement created successfully!');
       setShowPurchaseForm(false);
       fetchCarDetails();
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to create purchase agreement');
+      showError(error.response?.data?.error || 'Failed to create purchase agreement');
     }
   };
 
@@ -200,8 +204,9 @@ const CarDetails = () => {
     try {
       await deletePurchase(purchaseRecord.id);
       setPurchaseRecord(null);
+      success('Purchase agreement deleted successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to delete purchase agreement');
+      showError(error.response?.data?.error || 'Failed to delete purchase agreement');
     }
   };
 
@@ -213,8 +218,9 @@ const CarDetails = () => {
       setNotes([response.data, ...notes]);
       setNewNote('');
       setShowNoteForm(false);
+      success('Note added successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to add note');
+      showError(error.response?.data?.error || 'Failed to add note');
     }
   };
 
@@ -224,8 +230,9 @@ const CarDetails = () => {
     try {
       await deleteNote(noteId);
       setNotes(notes.filter(note => note.id !== noteId));
+      success('Note deleted successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to delete note');
+      showError(error.response?.data?.error || 'Failed to delete note');
     }
   };
 
@@ -237,9 +244,9 @@ const CarDetails = () => {
     try {
       await uploadPhotos(id, files);
       fetchCarDetails();
-      alert('Photos uploaded successfully!');
+      success('Photos uploaded successfully!');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to upload photos');
+      showError(error.response?.data?.error || 'Failed to upload photos');
     } finally {
       setUploading(false);
     }
@@ -251,8 +258,9 @@ const CarDetails = () => {
     try {
       await deletePhoto(id, filename);
       fetchCarDetails();
+      success('Photo deleted successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to delete photo');
+      showError(error.response?.data?.error || 'Failed to delete photo');
     }
   };
 
@@ -269,7 +277,7 @@ const CarDetails = () => {
       await reorderPhotos(id, photos);
       setCar({ ...car, photos });
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to reorder photos');
+      showError(error.response?.data?.error || 'Failed to reorder photos');
     }
   };
 
@@ -277,8 +285,9 @@ const CarDetails = () => {
     try {
       const response = await setCoverPhoto(id, photoIndex);
       setCar(response.data);
+      success('Cover photo set successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to set cover photo');
+      showError(error.response?.data?.error || 'Failed to set cover photo');
     }
   };
 
@@ -290,10 +299,10 @@ const CarDetails = () => {
     try {
       await uploadDocuments(id, files, documentType);
       fetchCarDetails();
-      alert('Documents uploaded successfully!');
+      success('Documents uploaded successfully!');
       setDocumentType('other'); // Reset to default
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to upload documents');
+      showError(error.response?.data?.error || 'Failed to upload documents');
     } finally {
       setUploadingDocs(false);
     }
@@ -305,8 +314,9 @@ const CarDetails = () => {
     try {
       await deleteDocument(id, filename);
       fetchCarDetails();
+      success('Document deleted successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to delete document');
+      showError(error.response?.data?.error || 'Failed to delete document');
     }
   };
 

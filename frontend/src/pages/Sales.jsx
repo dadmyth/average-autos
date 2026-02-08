@@ -4,9 +4,11 @@ import { getSales, deleteSale, exportSalesCSV, searchSalesByCustomer } from '../
 import { getCar } from '../api/cars';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getSettings } from '../api/settings';
+import { useToast } from '../context/ToastContext';
 
 const Sales = () => {
   const navigate = useNavigate();
+  const { success, error: showError } = useToast();
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedSale, setSelectedSale] = useState(null);
@@ -44,7 +46,7 @@ const Sales = () => {
       setShowSalesAgreement(true);
     } catch (error) {
       console.error('Error fetching car details:', error);
-      alert('Failed to load sales agreement');
+      showError('Failed to load sales agreement');
     }
   };
 
@@ -55,8 +57,9 @@ const Sales = () => {
     try {
       await deleteSale(sale.id);
       fetchSales();
+      success('Sale cancelled successfully');
     } catch (error) {
-      alert(error.response?.data?.error || 'Failed to cancel sale');
+      showError(error.response?.data?.error || 'Failed to cancel sale');
     }
   };
 
@@ -71,8 +74,9 @@ const Sales = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
+      success('Sales data exported successfully');
     } catch (error) {
-      alert('Failed to export CSV');
+      showError('Failed to export CSV');
     }
   };
 

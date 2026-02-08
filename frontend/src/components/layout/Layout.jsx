@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import ToastContainer from '../toast/ToastContainer';
 
 const Layout = () => {
   const { logout, user } = useAuth();
@@ -141,6 +142,9 @@ const Layout = () => {
       <main className="max-w-7xl mx-auto py-3 sm:py-6 px-3 sm:px-6 lg:px-8">
         <Outlet />
       </main>
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 };
