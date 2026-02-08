@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Black background -->
+  <rect width="1024" height="1024" fill="#111827"/>
+
+  <!-- Centered logo group -->
+  <g transform="translate(512, 512)" text-anchor="middle">
+    <!-- GS - Hero text with Playfair Display serif font -->
+    <text x="0" y="80"
+          font-family="'Playfair Display', 'Bodoni Moda', 'Didot', serif"
+          font-size="320"
+          font-weight="400"
+          fill="#ffffff"
+          letter-spacing="-4">
+      GS
+    </text>
+
+    <!-- AUTO - Sans-serif with letter spacing for luxury look -->
+    <text x="0" y="200"
+          font-family="'Montserrat', 'Inter', 'Helvetica', sans-serif"
+          font-size="100"
+          font-weight="500"
+          fill="#ffffff"
+          letter-spacing="24">
+      AUTO
+    </text>
+  </g>
+</svg>
