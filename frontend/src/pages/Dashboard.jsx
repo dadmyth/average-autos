@@ -5,6 +5,9 @@ import { getCars } from '../api/cars';
 import { getSales } from '../api/sales';
 import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import SkeletonStat from '../components/skeleton/SkeletonStat';
+import SkeletonTable from '../components/skeleton/SkeletonTable';
+import Skeleton from '../components/skeleton/Skeleton';
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
@@ -43,7 +46,31 @@ const Dashboard = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return (
+      <div className="px-3 py-4 sm:px-4 sm:py-6">
+        <Skeleton className="h-8 sm:h-10 w-48 mb-6" />
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonStat key={i} />
+          ))}
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonStat key={i} />
+          ))}
+        </div>
+
+        {/* Tables */}
+        <div className="space-y-6">
+          <SkeletonTable rows={3} />
+          <SkeletonTable rows={3} />
+        </div>
+      </div>
+    );
   }
 
   const totalAlertCount = alerts.length + agingStock.length;

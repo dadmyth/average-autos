@@ -9,6 +9,7 @@ import { getNotesByCarId, createNote, deleteNote } from '../api/notes';
 import { formatCurrency, formatDate, getExpiryStatus, daysUntilExpiry, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 import { useToast } from '../context/ToastContext';
+import Skeleton from '../components/skeleton/Skeleton';
 
 const CarDetails = () => {
   const { id } = useParams();
@@ -321,7 +322,38 @@ const CarDetails = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return (
+      <div className="px-3 py-4 sm:px-4 sm:py-6 max-w-6xl mx-auto">
+        <Skeleton className="h-8 w-48 mb-4" />
+        <Skeleton className="h-6 w-32 mb-6" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+                <Skeleton className="h-6 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-5/6" />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="space-y-4 sm:space-y-6">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+                <Skeleton className="h-6 w-32 mb-4" />
+                <div className="space-y-3">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!car) {

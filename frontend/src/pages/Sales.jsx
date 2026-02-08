@@ -5,6 +5,8 @@ import { getCar } from '../api/cars';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { getSettings } from '../api/settings';
 import { useToast } from '../context/ToastContext';
+import SkeletonTable from '../components/skeleton/SkeletonTable';
+import Skeleton from '../components/skeleton/Skeleton';
 
 const Sales = () => {
   const navigate = useNavigate();
@@ -105,7 +107,18 @@ const Sales = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-8">Loading...</div>;
+    return (
+      <div className="px-3 py-4 sm:px-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+          <Skeleton className="h-8 sm:h-9 w-40" />
+          <div className="flex gap-2">
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-28" />
+          </div>
+        </div>
+        <SkeletonTable rows={5} />
+      </div>
+    );
   }
 
   return (
