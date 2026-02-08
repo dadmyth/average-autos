@@ -34,7 +34,7 @@ const Layout = () => {
             <div className="flex">
               <div className="flex-shrink-0 flex items-center">
                 <Link to="/">
-                  <img src="/logo.svg" alt="GS Autos" className="h-10 w-auto" />
+                  <img src="/logo.svg" alt="GS Autos" className="h-14 sm:h-16 w-auto" />
                 </Link>
               </div>
               <div className="hidden sm:ml-8 sm:flex sm:space-x-6">
