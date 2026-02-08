@@ -87,19 +87,12 @@ const startServer = async () => {
   try {
     await initializeDatabase();
 
-    // Migrate old admin user to josh, or create if none exist
-    const adminUser = await dbGet('SELECT * FROM users WHERE username = ?', ['admin']);
-    if (adminUser) {
+    // Create default user if none exist
+    const existingUser = await dbGet('SELECT * FROM users LIMIT 1');
+    if (!existingUser) {
       const hashedPassword = await bcrypt.hash('S67kz5N8', 12);
-      await dbRun('UPDATE users SET username = ?, email = ?, password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['josh', 'joshc88@pm.me', hashedPassword, adminUser.id]);
-      console.log('Admin account migrated to josh');
-    } else {
-      const joshUser = await dbGet('SELECT * FROM users WHERE username = ?', ['josh']);
-      if (!joshUser) {
-        const hashedPassword = await bcrypt.hash('S67kz5N8', 12);
-        await dbRun('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', ['josh', 'joshc88@pm.me', hashedPassword]);
-        console.log('Default user created');
-      }
+      await dbRun('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', ['josh', 'joshc88@pm.me', hashedPassword]);
+      console.log('Default user created');
     }
 
     app.listen(PORT, '0.0.0.0', () => {
