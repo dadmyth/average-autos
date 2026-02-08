@@ -327,32 +327,32 @@ const CarDetails = () => {
   const totalCost = parseFloat(car.purchase_price) + totalServiceCost;
 
   return (
-    <div className="px-4 py-6 max-w-6xl mx-auto">
+    <div className="px-3 py-4 sm:px-4 sm:py-6 max-w-6xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <button
           onClick={() => navigate('/inventory')}
-          className="text-blue-600 hover:text-blue-800 mb-4"
+          className="text-blue-600 hover:text-blue-800 mb-2 sm:mb-4 text-sm"
         >
           ← Back to Inventory
         </button>
-        <div className="flex justify-between items-start">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+        <div className="flex justify-between items-start gap-3">
+          <div className="flex-1">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">
               {car.make} {car.model} ({car.year})
             </h1>
-            <p className="text-xl text-gray-600 mt-1">{car.registration_plate}</p>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 mt-1">{car.registration_plate}</p>
           </div>
-          <div className="text-right">
+          <div className="text-right flex-shrink-0">
             <span
-              className={`px-3 py-1 text-sm font-semibold rounded ${
+              className={`inline-block px-2 sm:px-3 py-1 text-xs sm:text-sm font-semibold rounded ${
                 car.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
               }`}
             >
               {car.status.toUpperCase()}
             </span>
             {car.status === 'active' && (
-              <p className="text-sm text-gray-600 mt-2">
+              <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2">
                 {daysInStock(car.purchase_date)} days in stock
               </p>
             )}
@@ -364,9 +364,9 @@ const CarDetails = () => {
         {/* Main Information */}
         <div className="lg:col-span-2 space-y-6">
           {/* Car Details Card */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Vehicle Information</h2>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+            <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Vehicle Information</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <p className="text-sm text-gray-500">Make</p>
                 <p className="font-medium">{car.make}</p>
@@ -431,11 +431,11 @@ const CarDetails = () => {
           </div>
 
           {/* Photo Gallery */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Photos</h2>
+          <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+            <div className="flex justify-between items-center mb-3 sm:mb-4 gap-2">
+              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Photos</h2>
               {car.status === 'active' && (
-                <label className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm cursor-pointer">
+                <label className="bg-gray-800 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md hover:bg-gray-700 text-xs sm:text-sm cursor-pointer whitespace-nowrap">
                   {uploading ? 'Uploading...' : 'Upload Photos'}
                   <input
                     type="file"
@@ -451,18 +451,18 @@ const CarDetails = () => {
 
             {car.photos && car.photos.length > 0 ? (
               <>
-                <div className="flex justify-between items-center mb-3">
-                  <p className="text-sm text-gray-600">{car.photos.length} photo{car.photos.length !== 1 ? 's' : ''}</p>
+                <div className="flex justify-between items-center mb-2 sm:mb-3 gap-2">
+                  <p className="text-xs sm:text-sm text-gray-600">{car.photos.length} photo{car.photos.length !== 1 ? 's' : ''}</p>
                   {car.status === 'active' && car.photos.length > 1 && (
                     <button
                       onClick={() => setReorderMode(!reorderMode)}
-                      className={`text-sm px-3 py-1 rounded-md ${
+                      className={`text-xs sm:text-sm px-2 sm:px-3 py-1 rounded-md ${
                         reorderMode
                           ? 'bg-purple-600 text-white hover:bg-purple-700'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                       }`}
                     >
-                      {reorderMode ? 'Done Reordering' : 'Reorder Photos'}
+                      {reorderMode ? 'Done' : 'Reorder'}
                     </button>
                   )}
                 </div>
@@ -539,22 +539,22 @@ const CarDetails = () => {
           </div>
 
           {/* Documents */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Documents</h2>
+          <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-3 sm:mb-4">
+              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Documents</h2>
               {car.status === 'active' && (
-                <div className="flex gap-2 items-center">
+                <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
                   <select
                     value={documentType}
                     onChange={(e) => setDocumentType(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    className="px-3 py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
                     disabled={uploadingDocs}
                   >
                     <option value="license">License</option>
                     <option value="payment_confirmation">Payment Confirmation</option>
                     <option value="other">Other</option>
                   </select>
-                  <label className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm cursor-pointer">
+                  <label className="bg-gray-800 text-white px-3 py-2 sm:px-4 rounded-md hover:bg-gray-700 text-xs sm:text-sm cursor-pointer text-center">
                     {uploadingDocs ? 'Uploading...' : 'Upload'}
                     <input
                       type="file"
@@ -632,13 +632,13 @@ const CarDetails = () => {
           </div>
 
           {/* Sales Expenses */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Sales Expenses</h2>
+          <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+            <div className="flex justify-between items-center mb-3 sm:mb-4">
+              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Sales Expenses</h2>
               {car.status === 'active' && (
                 <button
                   onClick={() => setShowServiceForm(!showServiceForm)}
-                  className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm"
+                  className="bg-gray-800 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md hover:bg-gray-700 text-xs sm:text-sm"
                 >
                   {showServiceForm ? 'Cancel' : 'Add Expense'}
                 </button>
@@ -646,8 +646,8 @@ const CarDetails = () => {
             </div>
 
             {showServiceForm && (
-              <form onSubmit={handleServiceSubmit} className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleServiceSubmit} className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-50 rounded-lg">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
                     <input
@@ -745,24 +745,24 @@ const CarDetails = () => {
           </div>
 
           {/* Activity Notes */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-900">Activity Notes</h2>
+          <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+            <div className="flex justify-between items-center mb-3 sm:mb-4">
+              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">Activity Notes</h2>
               <button
                 onClick={() => setShowNoteForm(!showNoteForm)}
-                className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 text-sm"
+                className="bg-gray-800 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-md hover:bg-gray-700 text-xs sm:text-sm"
               >
                 {showNoteForm ? 'Cancel' : 'Add Note'}
               </button>
             </div>
 
             {showNoteForm && (
-              <div className="mb-4 p-4 bg-gray-50 rounded-lg">
+              <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gray-50 rounded-lg">
                 <textarea
                   value={newNote}
                   onChange={(e) => setNewNote(e.target.value)}
                   placeholder="Enter your note (e.g., 'Customer John enquired about this car', 'Dropped price to $8000', etc.)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 text-sm"
                   rows="3"
                   autoFocus
                 />
@@ -906,10 +906,10 @@ const CarDetails = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Financial Summary */}
-          <div className="bg-white shadow rounded-lg p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Financial Summary</h2>
+          <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+            <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Financial Summary</h2>
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-600">Purchase Price</span>
@@ -944,8 +944,8 @@ const CarDetails = () => {
 
           {/* Actions */}
           {car.status === 'active' && (
-            <div className="bg-white shadow rounded-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Actions</h2>
+            <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+              <h2 className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-3 sm:mb-4">Actions</h2>
               <div className="space-y-3">
                 <button
                   onClick={() => setShowEditForm(true)}
@@ -1010,11 +1010,11 @@ const CarDetails = () => {
 
       {/* Sale Form Modal */}
       {showSaleForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Mark as Sold</h2>
+            <div className="p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3 sm:mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Mark as Sold</h2>
                 <button onClick={() => setShowSaleForm(false)} className="text-gray-400 hover:text-gray-600">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1022,8 +1022,8 @@ const CarDetails = () => {
                 </button>
               </div>
 
-              <form onSubmit={handleSaleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handleSaleSubmit} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Sale Date *</label>
                     <input
@@ -1145,11 +1145,11 @@ const CarDetails = () => {
 
       {/* Purchase Agreement Form Modal */}
       {showPurchaseForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-900">Create Purchase Agreement</h2>
+            <div className="p-4 sm:p-6">
+              <div className="flex justify-between items-center mb-3 sm:mb-4">
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Create Purchase Agreement</h2>
                 <button onClick={() => setShowPurchaseForm(false)} className="text-gray-400 hover:text-gray-600">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1161,8 +1161,8 @@ const CarDetails = () => {
                 Purchase date ({formatDate(car.purchase_date)}) and price ({formatCurrency(car.purchase_price)}) will be taken from the car record.
               </p>
 
-              <form onSubmit={handlePurchaseSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+              <form onSubmit={handlePurchaseSubmit} className="space-y-3 sm:space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Seller Name *</label>
                     <input

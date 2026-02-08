@@ -105,9 +105,9 @@ const Sales = () => {
   }
 
   return (
-    <div className="px-4 py-6">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Sales History</h1>
+    <div className="px-3 py-4 sm:px-4 sm:py-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4 sm:mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Sales History</h1>
         <div className="flex gap-2">
           <button
             onClick={toggleCustomerSearch}
@@ -132,7 +132,7 @@ const Sales = () => {
 
       {/* Customer Search Panel */}
       {showCustomerSearch && (
-        <div className="bg-white shadow rounded-lg p-4 mb-6">
+        <div className="bg-white shadow rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
           <div className="mb-3">
             <label className="block text-sm font-medium text-gray-700 mb-1">Search by Customer Name or Phone</label>
             <input
@@ -173,12 +173,12 @@ const Sales = () => {
       )}
 
       {/* Mobile card layout */}
-      <div className="sm:hidden space-y-3">
+      <div className="sm:hidden space-y-2">
         {sales.map((sale) => (
           <div
             key={sale.id}
             onClick={() => handleRowClick(sale.car_id)}
-            className="bg-white shadow rounded-lg p-4 cursor-pointer active:bg-gray-50"
+            className="bg-white shadow rounded-lg p-3 cursor-pointer active:bg-gray-50"
           >
             <div className="flex justify-between items-start mb-2">
               <div>

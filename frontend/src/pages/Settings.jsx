@@ -80,13 +80,13 @@ const Settings = () => {
   const inputClass = 'mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm';
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Settings</h1>
 
       {/* Business Details */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-1">Business Details</h2>
-        <p className="text-sm text-gray-500 mb-4">These details appear on sales agreements and documents.</p>
+      <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-1">Business Details</h2>
+        <p className="text-xs sm:text-sm text-gray-500 mb-3 sm:mb-4">These details appear on sales agreements and documents.</p>
         {businessError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{businessError}</div>
         )}
@@ -120,8 +120,8 @@ const Settings = () => {
       </div>
 
       {/* Change Password */}
-      <div className="bg-white shadow rounded-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h2>
+      <div className="bg-white shadow rounded-lg p-3 sm:p-4 lg:p-6">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Change Password</h2>
         {passwordError && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">{passwordError}</div>
         )}
