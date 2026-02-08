@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS documents (
     filename TEXT NOT NULL,
     document_type TEXT NOT NULL, -- 'license', 'payment_confirmation', 'other'
     uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expiry_date DATE,
     FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
 );
 

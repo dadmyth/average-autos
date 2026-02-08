@@ -1,9 +1,12 @@
 import api from './axios';
 
-export const uploadDocuments = async (carId, files, documentType) => {
+export const uploadDocuments = async (carId, files, documentType, expiryDate) => {
   const formData = new FormData();
   files.forEach(file => formData.append('documents', file));
   formData.append('documentType', documentType);
+  if (expiryDate) {
+    formData.append('expiryDate', expiryDate);
+  }
 
   const response = await api.post(`/documents/${carId}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }

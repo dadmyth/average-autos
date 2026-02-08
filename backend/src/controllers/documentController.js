@@ -48,7 +48,7 @@ export const uploadDoc = multer({
 export const uploadDocuments = async (req, res) => {
   try {
     const { carId } = req.params;
-    const { documentType } = req.body; // license, payment_confirmation, other
+    const { documentType, expiryDate } = req.body; // license, payment_confirmation, other
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
@@ -59,9 +59,9 @@ export const uploadDocuments = async (req, res) => {
     // Store document metadata in database
     for (const filename of filenames) {
       await dbRun(
-        `INSERT INTO documents (car_id, filename, document_type, uploaded_at)
-         VALUES (?, ?, ?, datetime('now'))`,
-        [carId, filename, documentType || 'other']
+        `INSERT INTO documents (car_id, filename, document_type, uploaded_at, expiry_date)
+         VALUES (?, ?, ?, datetime('now'), ?)`,
+        [carId, filename, documentType || 'other', expiryDate || null]
       );
     }
 

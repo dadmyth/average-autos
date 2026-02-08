@@ -24,6 +24,7 @@ const CarDetails = () => {
   const [documents, setDocuments] = useState([]);
   const [uploadingDocs, setUploadingDocs] = useState(false);
   const [documentType, setDocumentType] = useState('other');
+  const [documentExpiry, setDocumentExpiry] = useState('');
   const [lightboxImage, setLightboxImage] = useState(null);
   const [showSalesAgreement, setShowSalesAgreement] = useState(false);
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
@@ -327,10 +328,11 @@ const CarDetails = () => {
 
     setUploadingDocs(true);
     try {
-      await uploadDocuments(id, files, documentType);
+      await uploadDocuments(id, files, documentType, documentExpiry);
       fetchCarDetails();
       success('Documents uploaded successfully!');
       setDocumentType('other'); // Reset to default
+      setDocumentExpiry(''); // Reset expiry date
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to upload documents');
     } finally {
@@ -625,6 +627,14 @@ const CarDetails = () => {
                     <option value="payment_confirmation">Payment Confirmation</option>
                     <option value="other">Other</option>
                   </select>
+                  <input
+                    type="date"
+                    value={documentExpiry}
+                    onChange={(e) => setDocumentExpiry(e.target.value)}
+                    placeholder="Expiry date (optional)"
+                    className="px-3 py-2 border border-gray-300 rounded-md text-xs sm:text-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500"
+                    disabled={uploadingDocs}
+                  />
                   <label className="bg-gray-800 text-white px-3 py-2 sm:px-4 rounded-md hover:bg-gray-700 text-xs sm:text-sm cursor-pointer text-center">
                     {uploadingDocs ? 'Uploading...' : 'Upload'}
                     <input
@@ -689,6 +699,21 @@ const CarDetails = () => {
                               <p className="text-xs text-gray-500 mt-1 text-center">
                                 {formatDate(doc.uploaded_at)}
                               </p>
+                              {doc.expiry_date && (
+                                <p className={`text-xs mt-1 text-center font-medium ${
+                                  daysUntilExpiry(doc.expiry_date) < 0
+                                    ? 'text-red-600'
+                                    : daysUntilExpiry(doc.expiry_date) < 30
+                                    ? 'text-yellow-600'
+                                    : 'text-green-600'
+                                }`}>
+                                  {daysUntilExpiry(doc.expiry_date) < 0
+                                    ? 'Expired'
+                                    : daysUntilExpiry(doc.expiry_date) === 0
+                                    ? 'Expires today'
+                                    : `Expires in ${daysUntilExpiry(doc.expiry_date)} days`}
+                                </p>
+                              )}
                             </div>
                           );
                         })}
