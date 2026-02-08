@@ -23,6 +23,7 @@ import documentRoutes from './routes/documents.js';
 import settingsRoutes from './routes/settings.js';
 import purchaseRoutes from './routes/purchases.js';
 import noteRoutes from './routes/notes.js';
+import customerRoutes from './routes/customers.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -58,6 +59,7 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/purchases', purchaseRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/customers', customerRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

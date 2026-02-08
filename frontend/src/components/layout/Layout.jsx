@@ -18,6 +18,7 @@ const Layout = () => {
     { to: '/', label: 'Dashboard' },
     { to: '/inventory', label: 'Inventory' },
     { to: '/sold-history', label: 'Sold History' },
+    { to: '/customers', label: 'Customers' },
     { to: '/sales', label: 'Sales' },
   ];
 

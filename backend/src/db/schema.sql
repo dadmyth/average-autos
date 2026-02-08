@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS sales (
     car_id INTEGER NOT NULL UNIQUE,
     sale_date DATE NOT NULL,
     sale_price DECIMAL(10,2) NOT NULL,
+    customer_id INTEGER,
     customer_name TEXT NOT NULL,
     customer_email TEXT,
     customer_phone TEXT NOT NULL,
@@ -60,7 +61,8 @@ CREATE TABLE IF NOT EXISTS sales (
     notes TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE RESTRICT
+    FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE RESTRICT,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
 );
 
 -- Documents Table (for licenses, payment confirmations, etc.)
@@ -115,6 +117,19 @@ CREATE TABLE IF NOT EXISTS activity_notes (
     FOREIGN KEY (car_id) REFERENCES cars(id) ON DELETE CASCADE
 );
 
+-- Customers Table (for tracking repeat customers)
+CREATE TABLE IF NOT EXISTS customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT,
+    phone TEXT NOT NULL UNIQUE,
+    address TEXT,
+    license_number TEXT,
+    notes TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_cars_status ON cars(status);
 CREATE INDEX IF NOT EXISTS idx_cars_reg_expiry ON cars(registration_expiry);
@@ -124,3 +139,5 @@ CREATE INDEX IF NOT EXISTS idx_sales_car_id ON sales(car_id);
 CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(sale_date);
 CREATE INDEX IF NOT EXISTS idx_documents_car_id ON documents(car_id);
 CREATE INDEX IF NOT EXISTS idx_purchases_car_id ON purchases(car_id);
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email);
