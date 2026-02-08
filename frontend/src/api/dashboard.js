@@ -15,6 +15,11 @@ export const getExpiryAlerts = async () => {
   return response.data;
 };
 
+export const getAgingStock = async () => {
+  const response = await api.get('/dashboard/aging-stock');
+  return response.data;
+};
+
 export const getMonthlySales = async () => {
   const response = await api.get('/dashboard/monthly-sales');
   return response.data;

@@ -150,6 +150,36 @@ export const getExpiryAlerts = async (req, res, next) => {
   }
 };
 
+export const getAgingStock = async (req, res, next) => {
+  try {
+    const today = new Date();
+    const sixtyDaysAgo = new Date(today.getTime() - 60 * 24 * 60 * 60 * 1000);
+    const sixtyDaysAgoStr = sixtyDaysAgo.toISOString().split('T')[0];
+
+    const agingCars = await dbAll(`
+      SELECT id, registration_plate, make, model, year, purchase_date, purchase_price
+      FROM cars
+      WHERE status = 'active'
+        AND purchase_date <= ?
+      ORDER BY purchase_date ASC
+    `, [sixtyDaysAgoStr]);
+
+    const result = agingCars.map(car => {
+      const purchaseDate = new Date(car.purchase_date);
+      const daysInStock = Math.floor((today - purchaseDate) / (1000 * 60 * 60 * 24));
+      return { ...car, days_in_stock: daysInStock };
+    });
+
+    res.json({
+      success: true,
+      data: result,
+      count: result.length
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getMonthlySales = async (req, res, next) => {
   try {
     // Get sales grouped by month for the last 12 months
@@ -177,5 +207,6 @@ export default {
   getStatistics,
   getProfitLoss,
   getExpiryAlerts,
+  getAgingStock,
   getMonthlySales
 };
