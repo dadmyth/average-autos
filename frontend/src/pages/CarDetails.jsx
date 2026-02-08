@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCar, deleteCar, addServiceRecord, deleteServiceRecord, uploadPhotos, deletePhoto, reorderPhotos, setCoverPhoto } from '../api/cars';
+import { getCar, deleteCar, addServiceRecord, deleteServiceRecord, uploadPhotos, deletePhoto, reorderPhotos, setCoverPhoto, createCar } from '../api/cars';
 import { createSale, deleteSale } from '../api/sales';
 import { uploadDocuments, getDocuments, deleteDocument } from '../api/documents';
 import { getSettings } from '../api/settings';
@@ -115,6 +115,35 @@ const CarDetails = () => {
       navigate('/inventory');
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to delete car');
+    }
+  };
+
+  const handleDuplicate = async () => {
+    const newRego = prompt('Enter registration plate for the duplicate car:', car.registration_plate + '-COPY');
+    if (!newRego) return;
+
+    try {
+      const duplicatedCar = {
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        color: car.color,
+        registration_plate: newRego,
+        purchase_date: car.purchase_date,
+        purchase_price: car.purchase_price,
+        wof_expiry: car.wof_expiry,
+        registration_expiry: car.registration_expiry,
+        odometer: car.odometer,
+        vin: car.vin,
+        description: car.description,
+        status: 'active'
+      };
+
+      const response = await createCar(duplicatedCar);
+      success('Car duplicated successfully!');
+      navigate(`/cars/${response.data.id}`);
+    } catch (error) {
+      showError(error.response?.data?.error || 'Failed to duplicate car');
     }
   };
 
@@ -994,6 +1023,12 @@ const CarDetails = () => {
                   className="w-full bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
                 >
                   Edit Car
+                </button>
+                <button
+                  onClick={handleDuplicate}
+                  className="w-full bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+                >
+                  Duplicate Car
                 </button>
                 {!purchaseRecord ? (
                   <button

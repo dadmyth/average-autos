@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCars, deleteCar } from '../api/cars';
+import { getCars, deleteCar, createCar } from '../api/cars';
 import { createSale } from '../api/sales';
 import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
@@ -159,6 +159,35 @@ const Inventory = () => {
       fetchCars();
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to delete car');
+    }
+  };
+
+  const handleDuplicate = async (car) => {
+    const newRego = prompt(`Enter registration plate for the duplicate car:`, car.registration_plate + '-COPY');
+    if (!newRego) return;
+
+    try {
+      const duplicatedCar = {
+        make: car.make,
+        model: car.model,
+        year: car.year,
+        color: car.color,
+        registration_plate: newRego,
+        purchase_date: car.purchase_date,
+        purchase_price: car.purchase_price,
+        wof_expiry: car.wof_expiry,
+        registration_expiry: car.registration_expiry,
+        odometer: car.odometer,
+        vin: car.vin,
+        description: car.description,
+        status: 'active'
+      };
+
+      await createCar(duplicatedCar);
+      success('Car duplicated successfully!');
+      fetchCars();
+    } catch (error) {
+      showError(error.response?.data?.error || 'Failed to duplicate car');
     }
   };
 
@@ -402,6 +431,15 @@ const Inventory = () => {
               >
                 View
               </Link>
+              <button
+                onClick={() => handleDuplicate(car)}
+                className="flex-1 bg-purple-100 text-purple-700 px-3 py-2 rounded-md hover:bg-purple-200 text-xs sm:text-sm font-medium"
+                title="Duplicate car"
+              >
+                <svg className="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </button>
               {car.status === 'active' && (
                 <>
                   <button
