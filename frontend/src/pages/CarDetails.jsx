@@ -1307,7 +1307,7 @@ const CarDetails = () => {
 
               <div className="sales-agreement-print">
                 <div className="text-center mb-6">
-                  <img src="/logo.svg" alt="GS Autos" className="h-20 w-auto mx-auto mb-4 invert" />
+                  <img src="/logo.svg" alt="GS Autos" className="h-28 w-auto mx-auto mb-4 invert" />
                   <h1 className="text-2xl font-bold text-gray-900 mb-1">MOTOR VEHICLE PURCHASE AGREEMENT</h1>
                   <p className="text-sm text-gray-600">New Zealand</p>
                   <p className="text-sm text-gray-600 mt-2">Agreement Date: {formatDate(purchaseRecord.purchase_date)}</p>
@@ -1436,7 +1436,7 @@ const CarDetails = () => {
               body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
               body * { visibility: hidden; }
               .sales-agreement-print, .sales-agreement-print * { visibility: visible; }
-              .sales-agreement-print { position: absolute; left: 0; top: 0; width: 100%; padding: 0; margin: 0; }
+              .sales-agreement-print { position: fixed; left: 0; top: 0; width: 100%; height: 100%; padding: 0; margin: 0; overflow: visible; }
               .print\\:hidden { display: none !important; }
               .sales-agreement-print * { color: #000 !important; background: transparent !important; }
               .border-b { border-bottom: 1px solid #000 !important; }
@@ -1505,7 +1505,7 @@ const CarDetails = () => {
               {/* Printable Sales Agreement */}
               <div className="sales-agreement-print">
                 <div className="text-center mb-6">
-                  <img src="/logo.svg" alt="GS Autos" className="h-20 w-auto mx-auto mb-4 invert" />
+                  <img src="/logo.svg" alt="GS Autos" className="h-28 w-auto mx-auto mb-4 invert" />
                   <h1 className="text-2xl font-bold text-gray-900 mb-1">MOTOR VEHICLE SALES AGREEMENT</h1>
                   <p className="text-sm text-gray-600">New Zealand</p>
                   <p className="text-sm text-gray-600 mt-2">Agreement Date: {formatDate(car.sale.sale_date)}</p>
@@ -1656,12 +1656,14 @@ const CarDetails = () => {
 
               /* Position the agreement properly */
               .sales-agreement-print {
-                position: absolute;
+                position: fixed;
                 left: 0;
                 top: 0;
                 width: 100%;
+                height: 100%;
                 padding: 0;
                 margin: 0;
+                overflow: visible;
               }
 
               /* Hide modal controls */
