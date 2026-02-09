@@ -34,7 +34,8 @@ const Customers = () => {
       const customersData = await getCustomers(searchTerm);
       setCustomers(customersData);
     } catch (error) {
-      showError('Failed to load customers');
+      console.error('Error fetching customers:', error);
+      showError(error.response?.data?.error || 'Failed to load customers');
     } finally {
       setLoading(false);
     }
@@ -60,7 +61,8 @@ const Customers = () => {
       }
       setShowForm(false);
       resetForm();
-      fetchCustomers();
+      setSearch(''); // Clear search before refreshing
+      await fetchCustomers();
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to save customer');
     }
@@ -85,7 +87,8 @@ const Customers = () => {
     try {
       await deleteCustomer(customer.id);
       success('Customer deleted successfully');
-      fetchCustomers();
+      setSearch(''); // Clear search before refreshing
+      await fetchCustomers();
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to delete customer');
     }
