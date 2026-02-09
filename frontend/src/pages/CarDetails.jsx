@@ -314,8 +314,8 @@ const CarDetails = () => {
 
   const handleSetCoverPhoto = async (photoIndex) => {
     try {
-      const response = await setCoverPhoto(id, photoIndex);
-      setCar(response.data);
+      const updatedCar = await setCoverPhoto(id, photoIndex);
+      setCar(updatedCar);
       success('Cover photo set successfully');
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to set cover photo');

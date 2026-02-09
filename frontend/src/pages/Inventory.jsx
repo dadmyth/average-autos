@@ -5,6 +5,7 @@ import { createSale } from '../api/sales';
 import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
 import CarForm from '../components/cars/CarForm';
 import SkeletonCard from '../components/skeleton/SkeletonCard';
+import Skeleton from '../components/skeleton/Skeleton';
 import { useToast } from '../context/ToastContext';
 import EmptyState from '../components/empty/EmptyState';
 

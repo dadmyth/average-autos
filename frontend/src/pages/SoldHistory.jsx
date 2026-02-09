@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getCars } from '../api/cars';
 import { formatCurrency, formatDate, daysInStock } from '../utils/formatters';
 import SkeletonCard from '../components/skeleton/SkeletonCard';
+import Skeleton from '../components/skeleton/Skeleton';
 import EmptyState from '../components/empty/EmptyState';
 
 const SoldHistory = () => {
