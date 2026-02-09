@@ -21,6 +21,10 @@ export const getSales = async (req, res, next) => {
 
         return {
           ...sale,
+          purchase_price: costs.purchase_price,
+          service_cost: costs.total_service_cost,
+          wof_fee: costs.wof_fee,
+          min_margin: costs.min_margin,
           total_cost: costs.total_cost,
           profit
         };

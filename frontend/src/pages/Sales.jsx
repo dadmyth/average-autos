@@ -18,6 +18,7 @@ const Sales = () => {
   const [showSalesAgreement, setShowSalesAgreement] = useState(false);
   const [agreementCar, setAgreementCar] = useState(null);
   const [businessDetails, setBusinessDetails] = useState({ business_name: '', business_phone: '', business_email: '' });
+  const [expandedRows, setExpandedRows] = useState([]);
 
   // Customer search state
   const [customerSearch, setCustomerSearch] = useState('');
@@ -101,6 +102,12 @@ const Sales = () => {
     setShowCustomerSearch(!showCustomerSearch);
     setCustomerSearch('');
     setSearchResults([]);
+  };
+
+  const toggleRowExpansion = (saleId) => {
+    setExpandedRows(prev =>
+      prev.includes(saleId) ? prev.filter(id => id !== saleId) : [...prev, saleId]
+    );
   };
 
   const handleRowClick = (carId) => {
@@ -228,6 +235,7 @@ const Sales = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Sale Date</th>
@@ -238,46 +246,91 @@ const Sales = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {sales.map((sale) => (
-                <tr
-                  key={sale.id}
-                  onClick={() => handleRowClick(sale.car_id)}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{sale.registration_plate}</div>
-                    <div className="text-sm text-gray-500">{sale.make} {sale.model} ({sale.year})</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{sale.customer_name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">{formatDate(sale.sale_date)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(sale.sale_price)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`text-sm font-semibold ${sale.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatCurrency(sale.profit)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm">
-                    <div className="flex items-center gap-3">
+                <>
+                  <tr
+                    key={sale.id}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <button
-                        onClick={(e) => handleShowAgreement(sale, e)}
-                        className="text-gray-600 hover:text-gray-900 font-medium flex items-center gap-1"
+                        onClick={(e) => { e.stopPropagation(); toggleRowExpansion(sale.id); }}
+                        className="text-gray-400 hover:text-gray-600"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        Export
+                        {expandedRows.includes(sale.id) ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        )}
                       </button>
-                      <button
-                        onClick={(e) => handleCancelSale(sale, e)}
-                        className="text-red-600 hover:text-red-800 font-medium flex items-center gap-1"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                        Cancel
-                      </button>
-                    </div>
-                  </td>
-                </tr>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap" onClick={() => handleRowClick(sale.car_id)} className="cursor-pointer">
+                      <div className="text-sm font-medium text-gray-900">{sale.registration_plate}</div>
+                      <div className="text-sm text-gray-500">{sale.make} {sale.model} ({sale.year})</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{sale.customer_name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">{formatDate(sale.sale_date)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatCurrency(sale.sale_price)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`text-sm font-semibold ${sale.profit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatCurrency(sale.profit)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={(e) => handleShowAgreement(sale, e)}
+                          className="text-gray-600 hover:text-gray-900 font-medium flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                          Export
+                        </button>
+                        <button
+                          onClick={(e) => handleCancelSale(sale, e)}
+                          className="text-red-600 hover:text-red-800 font-medium flex items-center gap-1"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                          Cancel
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  {expandedRows.includes(sale.id) && (
+                    <tr key={`${sale.id}-details`} className="bg-gray-50">
+                      <td colSpan={7} className="px-6 py-4">
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                          <div>
+                            <span className="text-gray-500">Purchase Price:</span>
+                            <span className="ml-2 font-medium">{formatCurrency(sale.purchase_price || 0)}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Service Costs:</span>
+                            <span className="ml-2 font-medium">{formatCurrency(sale.service_cost || 0)}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">WOF Fee:</span>
+                            <span className="ml-2 font-medium">{formatCurrency(sale.wof_fee || 65)}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Min Margin:</span>
+                            <span className="ml-2 font-medium">{formatCurrency(sale.min_margin || 0)}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Total Cost:</span>
+                            <span className="ml-2 font-bold">{formatCurrency(sale.total_cost || 0)}</span>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </>
               ))}
             </tbody>
           </table>

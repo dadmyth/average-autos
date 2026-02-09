@@ -19,6 +19,10 @@ export const getStatistics = async (req, res, next) => {
     const revenueResult = await dbGet('SELECT COALESCE(SUM(sale_price), 0) as total FROM sales');
     const totalRevenue = parseFloat(revenueResult.total);
 
+    // Get total purchase cost of active cars (inventory value)
+    const inventoryValueResult = await dbGet("SELECT COALESCE(SUM(purchase_price), 0) as total FROM cars WHERE status = 'active'");
+    const inventoryValue = parseFloat(inventoryValueResult.total);
+
     // Get total costs (purchase prices + services)
     const purchaseCostsResult = await dbGet('SELECT COALESCE(SUM(purchase_price), 0) as total FROM cars');
     const totalPurchaseCosts = parseFloat(purchaseCostsResult.total);
@@ -65,6 +69,14 @@ export const getStatistics = async (req, res, next) => {
     // Get profit margin (as percentage)
     const profitMargin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
 
+    // Get this month's revenue
+    const thisMonthRevenueResult = await dbGet(`
+      SELECT COALESCE(SUM(sale_price), 0) as total
+      FROM sales
+      WHERE strftime('%Y-%m', sale_date) = strftime('%Y-%m', 'now')
+    `);
+    const thisMonthRevenue = parseFloat(thisMonthRevenueResult.total);
+
     res.json({
       success: true,
       data: {
@@ -74,9 +86,11 @@ export const getStatistics = async (req, res, next) => {
         total_revenue: totalRevenue,
         total_costs: totalCosts,
         total_profit: totalProfit,
+        inventory_value: inventoryValue,
         average_profit: averageProfit,
         average_days_to_sell: Math.round(averageDaysToSell),
-        profit_margin: profitMargin
+        profit_margin: profitMargin,
+        this_month_revenue: thisMonthRevenue
       }
     });
   } catch (error) {

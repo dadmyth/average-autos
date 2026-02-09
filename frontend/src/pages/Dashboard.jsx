@@ -93,8 +93,36 @@ const Dashboard = () => {
     <div className="px-4 py-6">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard</h1>
 
+      {/* Quick Actions */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+        <Link
+          to="/inventory"
+          className="bg-gray-800 text-white px-4 py-3 rounded-lg hover:bg-gray-700 text-center text-sm font-medium"
+        >
+          Add New Car
+        </Link>
+        <Link
+          to="/inventory"
+          className="bg-white text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50 text-center text-sm font-medium border"
+        >
+          View Inventory
+        </Link>
+        <Link
+          to="/sales"
+          className="bg-white text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50 text-center text-sm font-medium border"
+        >
+          View Sales
+        </Link>
+        <Link
+          to="/customers"
+          className="bg-white text-gray-700 px-4 py-3 rounded-lg hover:bg-gray-50 text-center text-sm font-medium border"
+        >
+          Customers
+        </Link>
+      </div>
+
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 mb-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5 mb-6">
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-3 sm:p-4 lg:p-5">
             <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Cars</dt>
@@ -116,7 +144,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg col-span-2 sm:col-span-1">
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="p-3 sm:p-4 lg:p-5">
+            <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">Inventory Value</dt>
+            <dd className="mt-1 text-xl sm:text-2xl lg:text-3xl font-semibold text-blue-600">
+              {formatCurrency(stats?.inventory_value || 0)}
+            </dd>
+          </div>
+        </div>
+
+        <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="p-3 sm:p-4 lg:p-5">
             <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">Total Profit</dt>
             <dd className="mt-1 text-xl sm:text-2xl lg:text-3xl font-semibold text-green-600">
@@ -128,7 +165,16 @@ const Dashboard = () => {
 
       {/* Quick Stats Row */}
       {stats?.sold_cars > 0 && (
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4 mb-6">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
+            <div className="p-3 sm:p-4 lg:p-5">
+              <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">This Month</dt>
+              <dd className="mt-1 text-xl sm:text-2xl lg:text-3xl font-semibold text-blue-600">
+                {formatCurrency(stats?.this_month_revenue || 0)}
+              </dd>
+            </div>
+          </div>
+
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="p-3 sm:p-4 lg:p-5">
               <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">Avg Days to Sell</dt>
@@ -148,7 +194,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white overflow-hidden shadow rounded-lg col-span-2 sm:col-span-1">
+          <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="p-3 sm:p-4 lg:p-5">
               <dt className="text-xs sm:text-sm font-medium text-gray-500 truncate">Avg Profit</dt>
               <dd className="mt-1 text-xl sm:text-2xl lg:text-3xl font-semibold text-green-600">
