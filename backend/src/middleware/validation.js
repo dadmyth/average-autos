@@ -1,11 +1,19 @@
 // NZ Registration Plate Validation
 // Standard format: ABC123 (3 letters, 3 numbers)
 // Personalized: 2-6 characters (letters and/or numbers)
+// Also allows temporary/test plates with hyphens or other common separators
 export const validateNZPlate = (plate) => {
+  const upperPlate = plate.toUpperCase().replace(/[-\s]/g, ''); // Remove hyphens and spaces
+
+  // Check if empty after cleaning
+  if (!upperPlate || upperPlate.length < 2) return false;
+
+  // Standard format: 2-3 letters + 1-4 digits
   const standardFormat = /^[A-Z]{2,3}[0-9]{1,4}$/;
+
+  // Personalized: 2-6 alphanumeric characters
   const personalizedFormat = /^[A-Z0-9]{2,6}$/;
 
-  const upperPlate = plate.toUpperCase();
   return standardFormat.test(upperPlate) || personalizedFormat.test(upperPlate);
 };
 
