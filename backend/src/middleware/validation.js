@@ -17,9 +17,9 @@ export const validateNZLicense = (license) => {
 };
 
 // NZ Phone Number Validation (basic)
-// Accepts: +64 format, 02x, 03, 04, 06, 07, 09
+// Accepts: +64 format, 02x (mobiles), 03, 04, 06, 07, 09 (landlines)
 export const validateNZPhone = (phone) => {
-  const phoneFormat = /^(\+64|0)[2-9][0-9]{7,9}$/;
+  const phoneFormat = /^(\+64|0)[0-9]{8,10}$/;
   return phoneFormat.test(phone.replace(/[\s-]/g, ''));
 };
 
