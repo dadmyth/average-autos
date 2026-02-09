@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getCustomers, createCustomer, updateCustomer, deleteCustomer } from '../api/customers';
+import { getCustomers, getCustomer, createCustomer, updateCustomer, deleteCustomer } from '../api/customers';
 import { formatCurrency, formatDate } from '../utils/formatters';
 import { useToast } from '../context/ToastContext';
 import SkeletonTable from '../components/skeleton/SkeletonTable';

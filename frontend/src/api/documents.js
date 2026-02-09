@@ -11,17 +11,17 @@ export const uploadDocuments = async (carId, files, documentType, expiryDate) =>
   const response = await api.post(`/documents/${carId}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
-  return response.data;
+  return response.data.data;
 };
 
 export const getDocuments = async (carId) => {
   const response = await api.get(`/documents/${carId}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const deleteDocument = async (carId, filename) => {
   const response = await api.delete(`/documents/${carId}/${filename}`);
-  return response.data;
+  return response.data.data;
 };
 
 export default {

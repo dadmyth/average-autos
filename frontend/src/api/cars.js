@@ -6,22 +6,22 @@ export const getCars = async (filters = {}) => {
   if (filters.search) params.append('search', filters.search);
 
   const response = await api.get(`/cars?${params.toString()}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const getCar = async (id) => {
   const response = await api.get(`/cars/${id}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const createCar = async (carData) => {
   const response = await api.post('/cars', carData);
-  return response.data;
+  return response.data.data;
 };
 
 export const updateCar = async (id, carData) => {
   const response = await api.put(`/cars/${id}`, carData);
-  return response.data;
+  return response.data.data;
 };
 
 export const deleteCar = async (id) => {
@@ -36,37 +36,37 @@ export const uploadPhotos = async (carId, files) => {
   const response = await api.post(`/cars/${carId}/photos`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   });
-  return response.data;
+  return response.data.data;
 };
 
 export const deletePhoto = async (carId, filename) => {
   const response = await api.delete(`/cars/${carId}/photos/${filename}`);
-  return response.data;
+  return response.data.data;
 };
 
 export const reorderPhotos = async (carId, photos) => {
   const response = await api.put(`/cars/${carId}/photos/reorder`, { photos });
-  return response.data;
+  return response.data.data;
 };
 
 export const setCoverPhoto = async (carId, photoIndex) => {
   const response = await api.put(`/cars/${carId}/photos/cover`, { photoIndex });
-  return response.data;
+  return response.data.data;
 };
 
 export const addServiceRecord = async (carId, serviceData) => {
   const response = await api.post(`/cars/${carId}/services`, serviceData);
-  return response.data;
+  return response.data.data;
 };
 
 export const updateServiceRecord = async (serviceId, serviceData) => {
   const response = await api.put(`/cars/services/${serviceId}`, serviceData);
-  return response.data;
+  return response.data.data;
 };
 
 export const deleteServiceRecord = async (serviceId) => {
   const response = await api.delete(`/cars/services/${serviceId}`);
-  return response.data;
+  return response.data.data;
 };
 
 export default {
