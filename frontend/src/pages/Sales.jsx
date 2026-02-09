@@ -26,13 +26,13 @@ const Sales = () => {
 
   useEffect(() => {
     fetchSales();
-    getSettings().then(res => setBusinessDetails(res.data)).catch(() => {});
+    getSettings().then(data => setBusinessDetails(data)).catch(() => {});
   }, []);
 
   const fetchSales = async () => {
     try {
-      const response = await getSales();
-      setSales(response.data);
+      const salesData = await getSales();
+      setSales(salesData);
     } catch (error) {
       console.error('Error fetching sales:', error);
     } finally {
@@ -43,8 +43,8 @@ const Sales = () => {
   const handleShowAgreement = async (sale, e) => {
     e.stopPropagation();
     try {
-      const carResponse = await getCar(sale.car_id);
-      setAgreementCar(carResponse.data);
+      const carData = await getCar(sale.car_id);
+      setAgreementCar(carData);
       setSelectedSale(sale);
       setShowSalesAgreement(true);
     } catch (error) {
@@ -87,8 +87,8 @@ const Sales = () => {
     setCustomerSearch(query);
     if (query.length >= 2) {
       try {
-        const response = await searchSalesByCustomer(query);
-        setSearchResults(response.data);
+        const results = await searchSalesByCustomer(query);
+        setSearchResults(results);
       } catch (error) {
         console.error('Error searching sales:', error);
       }

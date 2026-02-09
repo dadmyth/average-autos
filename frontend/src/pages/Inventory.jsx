@@ -48,8 +48,8 @@ const Inventory = () => {
   const fetchCars = async () => {
     try {
       const filters = filter !== 'all' ? { status: filter } : {};
-      const response = await getCars(filters);
-      setCars(response.data);
+      const carsData = await getCars(filters);
+      setCars(carsData);
     } catch (error) {
       console.error('Error fetching cars:', error);
     } finally {

@@ -17,9 +17,9 @@ const SoldHistory = () => {
 
   const fetchSoldCars = async () => {
     try {
-      const response = await getCars({ status: 'sold' });
+      const carsData = await getCars({ status: 'sold' });
       // Enrich with sale data
-      const carsWithSales = response.data.map(car => {
+      const carsWithSales = carsData.map(car => {
         const totalCost = parseFloat(car.purchase_price) + (car.costs?.total_expenses || 0);
         const salePrice = car.sale?.sale_price || 0;
         const profit = salePrice - totalCost;

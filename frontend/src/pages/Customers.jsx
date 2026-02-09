@@ -31,8 +31,8 @@ const Customers = () => {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const response = await getCustomers(search);
-      setCustomers(response.data);
+      const customersData = await getCustomers(search);
+      setCustomers(customersData);
     } catch (error) {
       showError('Failed to load customers');
     } finally {
@@ -95,8 +95,8 @@ const Customers = () => {
 
   const handleViewDetails = async (customer) => {
     try {
-      const response = await getCustomer(customer.id);
-      setShowDetails(response.data);
+      const customerData = await getCustomer(customer.id);
+      setShowDetails(customerData);
     } catch (error) {
       showError('Failed to load customer details');
     }

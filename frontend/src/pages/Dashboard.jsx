@@ -29,12 +29,12 @@ const Dashboard = () => {
           getSales(),
           getMonthlySales()
         ]);
-        setStats(statsData.data);
-        setAlerts(alertsData.data);
-        setAgingStock(agingData.data);
-        setActiveCars(carsData.data);
-        setSales(salesData.data || []);
-        setMonthlySales(monthlyData.data || []);
+        setStats(statsData);
+        setAlerts(alertsData || []);
+        setAgingStock(agingData || []);
+        setActiveCars(carsData);
+        setSales(salesData || []);
+        setMonthlySales(monthlyData || []);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
