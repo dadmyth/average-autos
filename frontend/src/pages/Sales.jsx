@@ -267,7 +267,7 @@ const Sales = () => {
                         )}
                       </button>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap" onClick={() => handleRowClick(sale.car_id)} className="cursor-pointer">
+                    <td className="px-6 py-4 whitespace-nowrap cursor-pointer" onClick={() => handleRowClick(sale.car_id)}>
                       <div className="text-sm font-medium text-gray-900">{sale.registration_plate}</div>
                       <div className="text-sm text-gray-500">{sale.make} {sale.model} ({sale.year})</div>
                     </td>

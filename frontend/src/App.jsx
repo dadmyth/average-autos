@@ -4,7 +4,6 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
 import Sales from './pages/Sales';
-import SoldHistory from './pages/SoldHistory';
 import Customers from './pages/Customers';
 import CarDetails from './pages/CarDetails';
 import Settings from './pages/Settings';
@@ -42,8 +41,7 @@ const App = () => {
           >
             <Route index element={<Dashboard />} />
             <Route path="inventory" element={<Inventory />} />
-            <Route path="sold-history" element={<SoldHistory />} />
-            <Route path="customers" element={<Customers />} />
+                        <Route path="customers" element={<Customers />} />
             <Route path="cars/:id" element={<CarDetails />} />
             <Route path="sales" element={<Sales />} />
             <Route path="settings" element={<Settings />} />
