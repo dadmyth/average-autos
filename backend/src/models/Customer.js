@@ -18,13 +18,18 @@ export const searchCustomers = async (searchTerm) => {
 };
 
 export const getCustomerPurchases = async (customerId) => {
+  // First get the customer to find their phone
+  const customer = await getCustomerById(customerId);
+  if (!customer) return [];
+
+  // Match sales by customer phone (since sales may not have customer_id yet for existing data)
   return await dbAll(`
     SELECT s.*, c.make, c.model, c.year, c.registration_plate, c.purchase_price
     FROM sales s
     JOIN cars c ON s.car_id = c.id
-    WHERE s.customer_id = ?
+    WHERE s.customer_phone = ?
     ORDER BY s.sale_date DESC
-  `, [customerId]);
+  `, [customer.phone]);
 };
 
 export const createCustomer = async (customer) => {
