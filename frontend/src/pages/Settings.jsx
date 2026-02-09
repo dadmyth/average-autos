@@ -20,8 +20,7 @@ const Settings = () => {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await getSettings();
-        const s = response.data;
+        const s = await getSettings();
         setBusinessName(s.business_name || '');
         setBusinessPhone(s.business_phone || '');
         setBusinessEmail(s.business_email || '');

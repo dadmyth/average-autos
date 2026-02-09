@@ -70,7 +70,7 @@ const CarDetails = () => {
 
   useEffect(() => {
     fetchCarDetails();
-    getSettings().then(res => setBusinessDetails(res.data)).catch(() => {});
+    getSettings().then(data => setBusinessDetails(data)).catch(() => {});
   }, [id]);
 
   // ESC key to close lightbox
@@ -86,18 +86,18 @@ const CarDetails = () => {
 
   const fetchCarDetails = async () => {
     try {
-      const [carResponse, docsResponse, notesResponse] = await Promise.all([
+      const [carData, docsData, notesData] = await Promise.all([
         getCar(id),
         getDocuments(id),
         getNotesByCarId(id)
       ]);
-      setCar(carResponse.data);
-      setDocuments(docsResponse.data || []);
-      setNotes(notesResponse.data || []);
+      setCar(carData);
+      setDocuments(docsData || []);
+      setNotes(notesData || []);
       // Fetch purchase record if exists
       try {
-        const purchaseResponse = await getPurchaseByCarId(id);
-        setPurchaseRecord(purchaseResponse.data);
+        const purchaseData = await getPurchaseByCarId(id);
+        setPurchaseRecord(purchaseData);
       } catch {
         setPurchaseRecord(null);
       }
@@ -140,9 +140,9 @@ const CarDetails = () => {
         status: 'active'
       };
 
-      const response = await createCar(duplicatedCar);
+      const newCar = await createCar(duplicatedCar);
       success('Car duplicated successfully!');
-      navigate(`/cars/${response.data.id}`);
+      navigate(`/cars/${newCar.id}`);
     } catch (error) {
       showError(error.response?.data?.error || 'Failed to duplicate car');
     }
