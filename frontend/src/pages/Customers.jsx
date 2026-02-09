@@ -28,10 +28,10 @@ const Customers = () => {
     fetchCustomers();
   }, []);
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (searchTerm = '') => {
     setLoading(true);
     try {
-      const customersData = await getCustomers(search);
+      const customersData = await getCustomers(searchTerm);
       setCustomers(customersData);
     } catch (error) {
       showError('Failed to load customers');
@@ -43,9 +43,7 @@ const Customers = () => {
   // Debounced search
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (search || customers.length > 0) {
-        fetchCustomers();
-      }
+      fetchCustomers(search);
     }, 300);
     return () => clearTimeout(timeoutId);
   }, [search]);
