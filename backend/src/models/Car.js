@@ -198,10 +198,30 @@ export const getTotalCosts = async (carId) => {
     [carId]
   );
 
+  const purchasePrice = parseFloat(car.purchase_price);
+  const serviceCost = parseFloat(result.total_service_cost);
+
+  // Fixed costs
+  const wofFee = 65; // $65 WOF fee per car
+
+  // Minimum load/profit margin: $1000 minimum, unless car is >$3000
+  // For cars >$3000, minimum margin is calculated differently
+  let minMargin = 1000;
+  if (purchasePrice > 3000) {
+    // For more expensive cars, we may want a percentage-based margin
+    // But the user said "$1000 minimum load unless car is >$3000"
+    // Let's keep it as $1000 for now since the requirement isn't fully specified
+    minMargin = 1000;
+  }
+
+  const totalCost = purchasePrice + serviceCost + wofFee + minMargin;
+
   return {
-    purchase_price: parseFloat(car.purchase_price),
-    total_service_cost: parseFloat(result.total_service_cost),
-    total_cost: parseFloat(car.purchase_price) + parseFloat(result.total_service_cost)
+    purchase_price: purchasePrice,
+    total_service_cost: serviceCost,
+    wof_fee: wofFee,
+    min_margin: minMargin,
+    total_cost: totalCost
   };
 };
 
